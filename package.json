@@ -26,5 +26,8 @@
     "cleverstack-backend"
     ],
     "devDependencies": {
-    }
+    },
+    "bundledDependencies": [
+        "clever-orm"
+    ]
 }
