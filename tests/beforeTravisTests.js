@@ -148,7 +148,7 @@ function configFiles( step ) {
                     ],
                     "modelAssociations": {
                         "UserModel": {
-                            "hasMany": [ "PermissionModel", "RoleModel" ]
+                            "belongsTo": [ "RoleModel" ]
                         },
                         "RoleModel": {
                             "hasMany": [  "PermissionModel" ],
