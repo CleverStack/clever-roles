@@ -143,17 +143,14 @@ function configFiles( step ) {
                     },
                     "modelAssociations": {
                         "UserModel": {
-                            "hasMany": [ "EmailModel", "EmailUserModel" ]
+                            "hasMany": [ "PermissionModel", "RoleModel" ]
                         },
-                        "EmailModel": {
-                            "hasMany": [  "EmailAttachmentModel", "EmailUserModel" ],
+                        "RoleModel": {
+                            "hasMany": [  "PermissionModel" ],
                             "belongsTo": [ "UserModel" ]
                         },
-                        "EmailUserModel":{
-                            "belongsTo" : [ "EmailModel", "UserModel" ]
-                        },
-                        "EmailAttachmentModel": {
-                            "belongsTo": [ "EmailModel" ]
+                        "PermissionModel":{
+                            "hasMany" : [ "RoleModel" ]
                         }
                     }
                 }
