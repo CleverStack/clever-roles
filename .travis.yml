@@ -1,0 +1,20 @@
+language: node_js
+
+node_js:
+  - '0.10'
+
+before_install:
+  - npm install -g grunt-cli
+  - npm install -g bower
+  - npm install -g cleverstack-cli
+  - npm install ncp
+  - npm install q
+
+before_script:
+  - mysql -e 'create database test_db;'
+  - export NODE_ENV=test && export NODE_PATH=./lib/:./modules/
+  - node tests/beforeTravisTests.js
+  - cd testProject/backend
+
+services:
+  - mysql
