@@ -27,6 +27,7 @@
   ],
   "devDependencies": {},
   "bundledDependencies": [
-    "clever-orm"
+    "clever-orm",
+    "clever-auth"
   ]
 }

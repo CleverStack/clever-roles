@@ -141,6 +141,11 @@ function configFiles( step ) {
                         "port": 3306
                         }
                     },
+                    "models": [
+                        "UserModel",
+                        "RoleModel",
+                        "PermissionModel"
+                    ],
                     "modelAssociations": {
                         "UserModel": {
                             "hasMany": [ "PermissionModel", "RoleModel" ]
