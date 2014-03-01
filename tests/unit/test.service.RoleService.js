@@ -1,19 +1,25 @@
 var expect = require( 'chai' ).expect
   , Q = require( 'q' )
-  , testEnv = require( './utils' ).testEnv
-  , roleId_0, roleId_1, roleId_2
+  , testEnv = require( 'utils' ).testEnv()
+  , roleId_0, roleId_1, roleId_2, roleId_3
   , permIds = [], roleIds = [], sysRoles = [], testUser;
 
+var Service
+  , Model
+  , PermissionModel
+  , UserModel;
+
 describe( 'service.RoleService', function () {
-    var Service, Model, PermissionModel, UserModel;
+    
 
     before( function( done ) {
-        this.timeout( 15000 );
-        testEnv( function ( _RoleService_, _RoleModel_, _PermissionModel_, _UserModel_ ) {
+        
+        testEnv( function ( _RoleService_, _ORMRoleModel_, _ORMPermissionModel_, _ORMUserModel_ ) {
+            
             Service = _RoleService_;
-            Model = _RoleModel_;
-            PermissionModel = _PermissionModel_;
-            UserModel = _UserModel_;
+            Model = _ORMRoleModel_;
+            PermissionModel = _ORMPermissionModel_;
+            UserModel = _ORMUserModel_;
 
             var permissions = [
                 {
@@ -27,6 +33,7 @@ describe( 'service.RoleService', function () {
             ];
 
             var promise = [];
+
             permissions.forEach( function ( perm ) {
                 promise.push( PermissionModel.create( perm ) );
             } );
@@ -41,22 +48,39 @@ describe( 'service.RoleService', function () {
     } );
 
     before( function ( done ) {
+        var role = {
+                name: 'Test Role'
+            };
+
+        Model
+            .create ( role )
+            .success ( function ( role ) {
+
+                expect ( role ).to.be.an ( 'object' ).and.be.ok;
+                expect ( role ).to.have.property ( 'id' ).and.be.ok;
+
+                roleId_3 = role.id;
+
+                done();
+            })
+            .error ( done );
+
+    });
+
+    before( function ( done ) {
         var systemRoles = [
                 {
-                    name: 'Super Admin',
-                    AccountId: 1
+                    name: 'Super Admin'
                 },
                 {
-                    name: 'General User',
-                    AccountId: 1
+                    name: 'General User'
                 }
             ]
             , testuser = {
                 username: 'Vasilij',
                 email: 'vasil_clever@gmail.com',
                 password: 'qqq',
-                RoleId: roleId_2,
-                AccountId: 15
+                RoleId: roleId_3
             }
             , promise = [];
 
@@ -84,12 +108,16 @@ describe( 'service.RoleService', function () {
                     .success( function ( user ) {
                         if ( !!user && !!user.id ) {
 
-                            user.updateAttributes( { RoleId: roleId_2 } )
+                            user.updateAttributes( { RoleId: roleId_3 } )
                                 .success( function ( user ) {
 
+                                    user = JSON.parse ( JSON.stringify ( user ) );
+
                                     expect( user ).to.be.an( 'object' );
-                                    expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
-                                    expect( user.RoleId ).to.equal( roleId_2 );
+                                    expect( user ).to.have.property( 'id' ).and.be.ok;
+                                    expect( user ).to.have.property( 'username' ).and.equal ( testuser.username );
+                                    expect( user ).to.have.property( 'email' ).and.equal ( testuser.email );
+                                    expect( user ).to.have.property( 'RoleId' ).and.equal ( testuser.RoleId );
 
                                     testUser = user;
                                     done();
@@ -99,9 +127,13 @@ describe( 'service.RoleService', function () {
                             UserModel.create( testuser )
                                 .success( function ( user ) {
 
+                                    user = JSON.parse ( JSON.stringify ( user ) );
+
                                     expect( user ).to.be.an( 'object' );
-                                    expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
-                                    expect( user.RoleId ).to.equal( roleId_2 );
+                                    expect( user ).to.have.property( 'id' ).and.be.ok;
+                                    expect( user ).to.have.property( 'username' ).and.equal ( testuser.username );
+                                    expect( user ).to.have.property( 'email' ).and.equal ( testuser.email );
+                                    expect( user ).to.have.property( 'RoleId' ).and.equal ( testuser.RoleId );
 
                                     testUser = user;
                                     done();
@@ -139,14 +171,15 @@ describe( 'service.RoleService', function () {
     });
 
     describe( '.saveNewRole( data, accId )', function () {
+        
         it( 'should be able to create a new role', function ( done ) {
             var role = {
                     name: 'Test_Role',
                     description: 'This is the test role'
-                }
-                , accountId = 1;
+                };
 
-            Service.saveNewRole( role, accountId )
+            Service
+                .saveNewRole( role )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
@@ -161,45 +194,38 @@ describe( 'service.RoleService', function () {
                             expect( result ).to.have.property( 'id' );
                             expect( result ).to.have.property( 'name' ).and.equal( role.name );
                             expect( result ).to.have.property( 'description' ).and.equal( role.description );
-                            expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
 
                             done();
                         } )
                         .error( done );
                 }, done );
         } );
+
     } );
 
     describe( '.saveRolePermissions( role, permIds )', function () {
+
         it( 'should not be able to create RolePermissions if permission array is empty', function ( done ) {
 
-            Model.find( roleId_0 )
+            Model
+                .find( roleId_0 )
                 .success( function ( role ) {
 
                     expect( role ).to.be.an( 'object' );
                     expect( role ).to.have.property( 'id' );
 
-                    Service.saveRolePermissions( role, [] )
+                    Service
+                        .saveRolePermissions( role, [] )
                         .then( function ( result ) {
 
                             expect( result ).to.be.an( 'object' );
                             expect( result ).to.have.property( 'id' ).and.equal( roleId_0 );
                             expect( result ).to.have.property( 'name' ).and.equal( 'Test_Role' );
                             expect( result ).to.have.property( 'description' ).and.equal( 'This is the test role' );
-                            expect( result ).to.have.property( 'AccountId' ).and.equal( 1 );
                             expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                             expect( result.permissions ).to.be.empty;
 
-                            role
-                                .getPermissions()
-                                .success( function ( result ) {
-
-                                    expect( result ).to.be.an( 'array' );
-                                    expect( result ).to.be.empty;
-
-                                    done();
-                                })
-
+                            done();
                         }, done );
                 } )
                 .error( done );
@@ -220,7 +246,6 @@ describe( 'service.RoleService', function () {
                             expect( result ).to.have.property( 'id' ).and.equal( roleId_0 );
                             expect( result ).to.have.property( 'name' ).and.equal( 'Test_Role' );
                             expect( result ).to.have.property( 'description' ).and.equal( 'This is the test role' );
-                            expect( result ).to.have.property( 'AccountId' ).and.equal( 1 );
                             expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                             expect( result.permissions ).to.have.length( permIds.length );
 
@@ -243,28 +268,25 @@ describe( 'service.RoleService', function () {
                         }, done );
                 } )
                 .error( done );
-
-
         } );
     } );
 
     describe( '.createRoleWithPermissions( data, accId )', function () {
+        
         it( 'should be able to create a new role with permissions', function ( done ) {
             var data = {
                     name: 'Test_Role_1',
                     description: 'This is the test role #1',
                     permIds: permIds
-                }
-              , accountId = 1;
+                };
 
-            Service.createRoleWithPermissions( data, accountId )
+            Service.createRoleWithPermissions( data )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
                     expect( result ).to.have.property( 'id' );
                     expect( result ).to.have.property( 'name' ).and.equal( data.name );
                     expect( result ).to.have.property( 'description' ).and.equal( data.description );
-                    expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
                     expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                     expect( result.permissions ).to.have.length( data.permIds.length );
 
@@ -277,7 +299,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( accountId );
 
                             role
                                 .getPermissions()
@@ -304,17 +325,15 @@ describe( 'service.RoleService', function () {
                     name: 'Test_Role_2',
                     description: 'This is the test role #2',
                     permIds: []
-                }
-                , accountId = 15;
+                };
 
-            Service.createRoleWithPermissions( data, accountId )
+            Service.createRoleWithPermissions( data )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
                     expect( result ).to.have.property( 'id' );
                     expect( result ).to.have.property( 'name' ).and.equal( data.name );
                     expect( result ).to.have.property( 'description' ).and.equal( data.description );
-                    expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
                     expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                     expect( result.permissions ).to.have.length( data.permIds.length );
 
@@ -327,7 +346,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( accountId );
 
                             role
                                 .getPermissions()
@@ -342,9 +360,11 @@ describe( 'service.RoleService', function () {
                         .error( done );
                 }, done );
         } );
+
     } );
 
     describe( '.updateRole( role, data )', function () {
+
         it( 'should be able to update name at existing role', function ( done ) {
             var data = {
                     name: 'Test_Role_updated'
@@ -357,7 +377,6 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId_0 );
                     expect( role ).to.have.property( 'name' ).and.equal( 'Test_Role' );
                     expect( role ).to.have.property( 'description' ).and.equal( 'This is the test role' );
-                    expect( role ).to.have.property( 'AccountId' ).and.equal( 1 );
 
                     Service
                         .updateRole( role, data )
@@ -367,7 +386,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' ).and.equal( roleId_0 );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( 'This is the test role' );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( 1 );
 
                             done();
                         }, done);
@@ -389,7 +407,6 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId_0 );
                     expect( role ).to.have.property( 'name' ).and.equal( 'Test_Role_updated' );
                     expect( role ).to.have.property( 'description' ).and.equal( 'This is the test role' );
-                    expect( role ).to.have.property( 'AccountId' ).and.equal( 1 );
 
                     Service
                         .updateRole( role, data )
@@ -399,7 +416,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' ).and.equal( roleId_0 );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( 1 );
 
                             done();
                         }, done);
@@ -407,26 +423,26 @@ describe( 'service.RoleService', function () {
                 } )
                 .error( done );
         } );
+
     } );
 
     describe( '.updateRoleWithPermissions( data, accId )', function () {
+
         it( 'should be able to update a existing role with permissions', function ( done ) {
             var data = {
                     id: roleId_1,
                     name: 'Test_Role_1_updated',
                     description: 'This is the test role #1 updated',
                     permIds: []
-                }
-              , accountId = 1;
+                };
 
-            Service.updateRoleWithPermissions( data, accountId )
+            Service.updateRoleWithPermissions( data )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
                     expect( result ).to.have.property( 'id' ).and.equal( roleId_1 );
                     expect( result ).to.have.property( 'name' ).and.equal( data.name );
                     expect( result ).to.have.property( 'description' ).and.equal( data.description );
-                    expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
                     expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                     expect( result.permissions ).to.be.empty;
 
@@ -437,7 +453,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' ).and.equal( roleId_1 );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( accountId );
 
                             role
                                 .getPermissions()
@@ -459,17 +474,15 @@ describe( 'service.RoleService', function () {
                     name: 'Test_Role_2_updated',
                     description: 'This is the test role #2 updated',
                     permIds: permIds
-                }
-                , accountId = 15;
+                };
 
-            Service.updateRoleWithPermissions( data, accountId )
+            Service.updateRoleWithPermissions( data )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
                     expect( result ).to.have.property( 'id' ).and.equal( roleId_2 );
                     expect( result ).to.have.property( 'name' ).and.equal( data.name );
                     expect( result ).to.have.property( 'description' ).and.equal( data.description );
-                    expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
                     expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                     expect( result.permissions ).to.have.length( data.permIds.length );
 
@@ -480,7 +493,6 @@ describe( 'service.RoleService', function () {
                             expect( role ).to.have.property( 'id' ).and.equal( roleId_2 );
                             expect( role ).to.have.property( 'name' ).and.equal( data.name );
                             expect( role ).to.have.property( 'description' ).and.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.equal( accountId );
 
                             role
                                 .getPermissions()
@@ -502,85 +514,57 @@ describe( 'service.RoleService', function () {
                 }, done );
         } );
 
-        it( 'should not be able to update roles with permissions if the accountId does not coincide with role.accountId', function ( done ) {
-            var data = {
-                    id: roleId_2,
-                    name: 'Test_Role_2_updated_second_time',
-                    description: 'This is the test role #2 updated second time',
-                    permIds: permIds
-                }
-                , accountId = 50;
-
-            Service.updateRoleWithPermissions( data, accountId )
-                .then( function ( result ) {
-
-                    expect( result ).to.be.an( 'object' );
-                    expect( result ).to.have.property( 'statuscode' ).and.equal( 403 );
-                    expect( result ).to.have.property( 'message' );
-
-                    Model.find( roleId_2 )
-                        .success( function ( role ) {
-
-                            expect( role ).to.be.an( 'object' );
-                            expect( role ).to.have.property( 'id' ).and.equal( roleId_2 );
-                            expect( role ).to.have.property( 'name' ).and.not.equal( data.name );
-                            expect( role ).to.have.property( 'description' ).and.not.equal( data.description );
-                            expect( role ).to.have.property( 'AccountId' ).and.not.equal( accountId );
-
-                            done();
-                        } )
-                        .error( done );
-                }, done );
-        } );
     } );
 
-    describe( '.listRolesWithPerm( accId, roleId )', function () {
-        it( 'should be able to get a role with permission', function ( done ) {
-            var roleId = roleId_0
-              , accountId = 1;
+    describe( '.listRolesWithPerm(  )', function () {
 
-            Service.listRolesWithPerm( accountId, roleId )
+        it( 'should be able to get a list of roles with permission', function ( done ) {
+
+            Service
+                .listRolesWithPerm()
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'array' );
-                    expect( result ).to.have.length( 1 );
-                    expect( result[0] ).to.be.an( 'object' );
-                    expect( result[0] ).to.contain.keys( 'id', 'name', 'description', 'permissions' );
-                    expect( result[0].id ).to.equal( roleId );
-                    expect( result[0].permissions ).to.be.an( 'array' );
-                    expect( result[0].permissions ).to.have.length.above( 0 );
-                    expect( result[0].permissions[0] ).to.be.an( 'object' );
-                    expect( result[0].permissions[0] ).to.contain.keys( 'permId', 'action', 'description' );
+                    expect( result ).to.have.length.above( 0 );
+                    expect( result[ result.length - 1 ] ).to.be.an( 'object' );
+                    expect( result[ result.length - 1 ] ).to.contain.keys( 'id', 'name', 'description', 'permissions' );
+                    expect( result[ result.length - 1 ].permissions ).to.be.an( 'array' );
+                    expect( result[ result.length - 1 ].permissions[0] ).to.contain.keys( 'permId', 'action', 'description' );
 
                     done();
                 }, done );
         } );
 
-        it( 'should be able to get a list of roles with permission for accountId', function ( done ) {
-            var accountId = 1;
+    } );
 
-            Service.listRolesWithPerm( accountId )
+    describe( '.getRoleWithPerms( roleId )', function () {
+
+        it( 'should be able to get role with permission by id', function ( done ) {
+
+            Service
+                .getRoleWithPerms( roleId_0 )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'array' );
-                    expect( result ).to.have.length.above( 1 );
+                    expect( result ).to.have.length ( 1 );
                     expect( result[ 0 ] ).to.be.an( 'object' );
                     expect( result[ 0 ] ).to.contain.keys( 'id', 'name', 'description', 'permissions' );
-                    expect( result[ result.length - 2 ].permissions ).to.be.an( 'array' );
-                    expect( result[ result.length - 2 ].permissions[0] ).to.contain.keys( 'permId', 'action', 'description' );
+                    expect( result[ 0 ].permissions ).to.be.an( 'array' );
+                    expect( result[ 0 ].permissions[0] ).to.contain.keys( 'permId', 'action', 'description' );
 
                     done();
                 }, done );
         } );
+
     } );
 
-    describe( '.assignRole( accId, userIds, removed, role )', function () {
+    describe( '.assignRole( userIds, removed, role )', function () {
+        
         it( 'should be able to get a statuscode 404 if insufficient data', function ( done ) {
-            var accountId = 15
-              , userIds = []
+            var userIds = []
               , removed = [];
 
-            Service.assignRole( accountId, userIds, removed )
+            Service.assignRole( userIds, removed )
                 .then( function ( result ) {
 
                     expect( result ).to.be.an( 'object' );
@@ -592,8 +576,7 @@ describe( 'service.RoleService', function () {
         } );
 
         it( 'should be able to assign null role for user', function ( done ) {
-            var roleId = roleId_2
-              , accountId = 15
+            var roleId = roleId_3
               , userIds = []
               , removed = [ testUser.id ];
 
@@ -604,13 +587,16 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId );
                     expect( role ).to.have.property( 'name' );
 
-                    Service.assignRole( accountId, userIds, removed, role )
+                    Service
+                        .assignRole( userIds, removed, role )
                         .then( function ( result ) {
 
                             UserModel
                                 .find( testUser.id )
                                 .success( function ( user ) {
 
+                                    user = JSON.parse ( JSON.stringify ( user ) );
+                                    
                                     expect( user ).to.be.an( 'object' );
                                     expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
                                     expect( user.id ).to.equal( testUser.id );
@@ -626,7 +612,6 @@ describe( 'service.RoleService', function () {
 
         it( 'should be able to assign role for user', function ( done ) {
             var roleId = roleId_2
-                , accountId = 15
                 , userIds = [ testUser.id ]
                 , removed = [];
 
@@ -637,12 +622,14 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId );
                     expect( role ).to.have.property( 'name' );
 
-                    Service.assignRole( accountId, userIds, removed, role )
+                    Service.assignRole( userIds, removed, role )
                         .then( function ( result ) {
 
                             UserModel
                                 .find( testUser.id )
                                 .success( function ( user ) {
+
+                                    user = JSON.parse ( JSON.stringify ( user ) );
 
                                     expect( user ).to.be.an( 'object' );
                                     expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
@@ -659,9 +646,8 @@ describe( 'service.RoleService', function () {
 
         it( 'should be able to assign null role for all user', function ( done ) {
             var roleId = roleId_2
-                , accountId = 15
-                , userIds = []
-                , removed = [];
+              , userIds = []
+              , removed = [];
 
             Model.find( roleId )
                 .success( function ( role ) {
@@ -670,12 +656,15 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId );
                     expect( role ).to.have.property( 'name' );
 
-                    Service.assignRole( accountId, userIds, removed, role )
+                    Service
+                        .assignRole( userIds, removed, role )
                         .then( function ( result ) {
 
                             UserModel
                                 .find( testUser.id )
                                 .success( function ( user ) {
+
+                                    user = JSON.parse ( JSON.stringify ( user ) );
 
                                     expect( user ).to.be.an( 'object' );
                                     expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
@@ -696,7 +685,6 @@ describe( 'service.RoleService', function () {
 
         before( function ( done ) {
             var roleId = roleId_2
-              , accountId = 15
               , userIds = [ testUser.id ]
               , removed = [];
 
@@ -707,12 +695,14 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId );
                     expect( role ).to.have.property( 'name' );
 
-                    Service.assignRole( accountId, userIds, removed, role )
+                    Service.assignRole( userIds, removed, role )
                         .then( function ( result ) {
 
                             UserModel
                                 .find( testUser.id )
                                 .success( function ( user ) {
+
+                                    user = JSON.parse ( JSON.stringify ( user ) );
 
                                     expect( user ).to.be.an( 'object' );
                                     expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
@@ -729,7 +719,8 @@ describe( 'service.RoleService', function () {
 
         it( 'should not be able to delete system role', function ( done ) {
 
-            Model.find( sysRoles[0].id )
+            Model
+                .find( sysRoles[0].id )
                 .success( function ( role ) {
 
                     expect( role ).to.be.an( 'object' );
@@ -779,6 +770,8 @@ describe( 'service.RoleService', function () {
                                         .find( testUser.id )
                                         .success( function ( user ) {
 
+                                            user = JSON.parse ( JSON.stringify ( user ) );
+
                                             expect( user ).to.be.an( 'object' );
                                             expect( user ).to.contain.keys( 'id', 'username', 'email', 'RoleId' );
                                             expect( user.id ).to.equal( testUser.id );
@@ -795,19 +788,19 @@ describe( 'service.RoleService', function () {
         } );
     } );
 
-    describe( '.removeRoleWithPermissions( accId, id )', function () {
+    describe( '.removeRoleWithPermissions( id )', function () {
 
         it( 'should not be able to delete system role', function ( done ) {
-            var accountId = 1;
 
-            Model.find( sysRoles[0].id )
+            Model
+                .find( sysRoles[0].id )
                 .success( function ( role ) {
 
                     expect( role ).to.be.an( 'object' );
                     expect( role ).to.have.property( 'id' );
                     expect( role ).to.have.property( 'name' ).and.equal( sysRoles[0].name );
 
-                    Service.removeRoleWithPermissions( accountId, role.id )
+                    Service.removeRoleWithPermissions( role.id )
                         .then( function ( result ) {
 
                             expect( result ).to.be.an( 'object' );
@@ -829,40 +822,7 @@ describe( 'service.RoleService', function () {
                 .error( done );
         } );
 
-        it( 'should not be able to delete role with permissions if the accountId does not coincide with role.accountId', function ( done ) {
-            var accountId = 10;
-
-            Model.find( roleId_1 )
-                .success( function ( role ) {
-
-                    expect( role ).to.be.an( 'object' );
-                    expect( role ).to.have.property( 'id' ).and.equal( roleId_1 );
-                    expect( role ).to.have.property( 'name' );
-
-                    Service.removeRoleWithPermissions( accountId, role.id )
-                        .then( function ( result ) {
-
-                            expect( result ).to.be.an( 'object' );
-                            expect( result ).to.have.property( 'statuscode' ).and.equal( 403 );
-                            expect( result ).to.have.property( 'message' );
-
-                            Model.find( roleId_1 )
-                                .success( function ( role ) {
-
-                                    expect( role ).to.be.an( 'object' );
-                                    expect( role ).to.have.property( 'id' ).and.equal( roleId_1 );
-                                    expect( role ).to.have.property( 'name' );
-
-                                    done();
-                                } )
-                                .error( done );
-                        }, done );
-                } )
-                .error( done );
-        } );
-
         it( 'should be able to delete role with permissions', function ( done ) {
-            var accountId = 1;
 
             Model.find( roleId_1 )
                 .success( function ( role ) {
@@ -871,7 +831,7 @@ describe( 'service.RoleService', function () {
                     expect( role ).to.have.property( 'id' ).and.equal( roleId_1 );
                     expect( role ).to.have.property( 'name' );
 
-                    Service.removeRoleWithPermissions( accountId, role.id )
+                    Service.removeRoleWithPermissions( role.id )
                         .then( function ( result ) {
 
                             expect( result ).to.be.an( 'object' );

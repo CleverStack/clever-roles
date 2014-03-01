@@ -1,33 +1,33 @@
 {
-  "name": "clever-roles",
-  "version": "0.0.2",
-  "dependencies": {
-    "lodash": "2.4.1"
-  },
-  "author": {
-    "name": "Clevertech",
-    "email": "info@clevertech.biz",
-    "web": "http://www.clevertech.biz"
-  },
-  "main": "module.js",
-  "description": "Adds permissions and roles to users with CleverStack",
-  "license": "BSD-2-Clause",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/CleverStack/clever-roles.git"
-  },
-  "bugs": {
-    "url": "https://github.com/CleverStack/clever-roles/issues"
-  },
-  "keywords": [
-    "cleverstack",
-    "cleverstack-module",
-    "cleverstack-modules",
-    "cleverstack-backend"
-  ],
-  "devDependencies": {},
-  "bundledDependencies": [
-    "clever-orm",
-    "clever-auth"
-  ]
+    "name": "clever-roles",
+    "version": "0.0.2",
+    "dependencies": {
+        "lodash": "2.4.1"
+    },
+    "author": {
+        "name": "Clevertech",
+        "email": "info@clevertech.biz",
+        "web": "http://www.clevertech.biz"
+    },
+    "main": "module.js",
+    "description": "Adds permissions and roles to users with CleverStack",
+    "license": "BSD-2-Clause",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/CleverStack/clever-roles.git"
+    },
+    "bugs": {
+        "url": "https://github.com/CleverStack/clever-roles/issues"
+    },
+    "keywords": [
+        "cleverstack",
+        "cleverstack-module",
+        "cleverstack-modules",
+        "cleverstack-backend"
+    ],
+    "devDependencies": {},
+    "bundledDependencies": [
+        "clever-orm",
+        "clever-auth"
+    ]
 }

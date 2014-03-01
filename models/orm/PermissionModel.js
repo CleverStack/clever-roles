@@ -1,5 +1,6 @@
 module.exports = function ( sequelize, DataTypes ) {
-    return sequelize.define( "Permission", {
+    return sequelize.define( "Permission", 
+        {
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
@@ -15,6 +16,17 @@ module.exports = function ( sequelize, DataTypes ) {
             description: DataTypes.STRING
         },
         {
-            paranoid: true
+            paranoid: true,
+            instanceMethods: {
+                toJSON: function () {
+                    var values = this.values;
+
+                    delete values.createdAt;
+                    delete values.updatedAt;
+                    delete values.deletedAt;
+                    
+                    return values;
+                }
+            }
         } );
 };

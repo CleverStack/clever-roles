@@ -1,20 +1,33 @@
-var Q = require( 'q' )
+var Q = require ( 'q' )
   , PermissionService = null;
 
-module.exports = function ( sequelize, ORMPermissionModel, ORMRoleModel ) {
+module.exports = function ( sequelize,
+                            ORMPermissionModel,
+                            ORMRoleModel ) {
 
     if ( PermissionService && PermissionService.instance ) {
         return PermissionService.instance;
     }
 
-    PermissionService = require( 'services' ).BaseService.extend( {
+    PermissionService = require ( 'services' ).BaseService.extend ( {
 
         list: function () {
-            return ORMPermissionModel.all();
+            var deferred = Q.defer ();
+
+            ORMPermissionModel
+                .findAll ()
+                .success ( function ( perms ) {
+                    deferred.resolve ( perms.map ( function ( x ) { return x.toJSON (); } ) );
+                } )
+                .error ( deferred.reject );
+
+            return deferred.promise;
         },
 
         hasPermissions: function ( req, permissions, booleanLogic, fn ) {
-            permissions = Array.isArray( permissions ) ? permissions : [permissions];
+            permissions = Array.isArray ( permissions )
+                ? permissions
+                : [ permissions ];
 
             if ( typeof booleanLogic === "function" ) {
                 fn = booleanLogic;
@@ -23,49 +36,47 @@ module.exports = function ( sequelize, ORMPermissionModel, ORMRoleModel ) {
 
             booleanLogic = booleanLogic === "any" ? 'any' : 'all';
 
-            var isAuthed = req.isAuthenticated() && req.user.role
-              , booleanCount = 0;
+            var isAuthed = req.isAuthenticated () && req.user.role
+                , booleanCount = 0;
 
             if ( !isAuthed ) {
-                return fn( null, false );
+                return fn ( null, false );
             }
 
             if ( req.user && req.user.hasAdminRight === true ) {
-                return fn( null, true );
+                return fn ( null, true );
             }
 
             if ( !permissions.length ) {
-                return fn( null, true );
+                return fn ( null, true );
             }
 
-            ORMRoleModel.find( {
-                where: {
-                    id: req.user.role.id
-                },
-                include: [ORMPermissionModel]
-            } )
-                .success( function ( userPermissions ) {
+            ORMRoleModel.find ( {
+                    where: { id: req.user.role.id },
+                    include: [ ORMPermissionModel ]
+                } )
+                .success ( function ( userPermissions ) {
                     if ( !userPermissions.permissions.length ) {
-                        fn( null, false );
+                        fn ( null, false );
                     }
 
-                    var permissionArray = userPermissions.permissions.map( function ( perm ) {
+                    var permissionArray = userPermissions.permissions.map ( function ( perm ) {
                         return perm.action;
                     } );
 
-                    permissionArray.forEach( function ( perm ) {
-                        if ( ~permissions.indexOf( perm ) ) {
+                    permissionArray.forEach ( function ( perm ) {
+                        if ( ~permissions.indexOf ( perm ) ) {
                             ++booleanCount;
                         }
                     } );
 
-                    fn( null, (booleanLogic === "any" && booleanCount > 0) || (booleanLogic === "all" && booleanCount === permissions.length) );
+                    fn ( null, (booleanLogic === "any" && booleanCount > 0) || (booleanLogic === "all" && booleanCount === permissions.length) );
                 } )
-                .error( fn );
+                .error ( fn );
         }
     } );
 
-    PermissionService.instance = new PermissionService( sequelize );
+    PermissionService.instance = new PermissionService ( sequelize );
     PermissionService.Model = ORMPermissionModel;
 
     return PermissionService.instance;

@@ -1,19 +1,21 @@
 var expect = require( 'chai' ).expect
   , Q = require( 'q' )
-  , testEnv = require( './utils' ).testEnv;
+  , testEnv = require( 'utils' ).testEnv();
 
-var roleId
+var Service
+  , RoleService
+  , Model
+  , roleId
   , permIds = [];
 
 describe( 'service.PermissionService', function () {
-    var Service, RoleService, Model;
 
     before( function ( done ) {
-        this.timeout( 15000 );
-        testEnv( function ( _PermissionService_, _RoleService_, _PermissionModel_ ) {
+        testEnv( function ( _PermissionService_, _RoleService_, _ORMPermissionModel_ ) {
+            
             Service = _PermissionService_;
             RoleService = _RoleService_;
-            Model = _PermissionModel_
+            Model = _ORMPermissionModel_
 
             var permissions = [
                 {
@@ -46,17 +48,15 @@ describe( 'service.PermissionService', function () {
                 name: 'Test_Role',
                 description: 'This is the test role',
                 permIds: permIds
-            }
-            , accountId = 1;
+            };
 
-        RoleService.createRoleWithPermissions( data, accountId )
+        RoleService.createRoleWithPermissions( data )
             .then( function ( result ) {
 
                 expect( result ).to.be.an( 'object' );
                 expect( result ).to.have.property( 'id' );
                 expect( result ).to.have.property( 'name' ).and.equal( data.name );
                 expect( result ).to.have.property( 'description' ).and.equal( data.description );
-                expect( result ).to.have.property( 'AccountId' ).and.equal( accountId );
                 expect( result ).to.have.property( 'permissions' ).to.be.an( 'array' );
                 expect( result.permissions ).to.have.length( data.permIds.length );
 
@@ -295,6 +295,25 @@ describe( 'service.PermissionService', function () {
 
                 done();
             } );
+        } );
+
+    } );
+
+    describe( '.list()', function () {
+
+        it( 'should return list of permissions', function ( done ) {
+            Service
+                .list()
+                .then ( function ( result ) {
+
+                    expect( result ).to.be.an( 'array' ).and.have.length.above ( 0 );
+                    expect( result [ 0 ] ).to.be.an( 'object' ).and.be.ok;
+                    expect( result [ 0 ] ).to.contain.keys( 'id', 'action', 'description' );
+
+                    expect( result [ 0 ] ).to.not.contain.keys( 'createdAt', 'updatedAt', 'deletedAt' );
+
+                    done();
+                }, done )
         } );
 
     } );
