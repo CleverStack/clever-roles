@@ -1,4 +1,4 @@
-CleverStack ORM Module
+CleverStack Roles Module (RBAC)
 ====================
 [![NPM version](https://badge.fury.io/js/clever-roles.png)](http://badge.fury.io/js/clever-roles) [![GitHub version](https://badge.fury.io/gh/cleverstack%2Fclever-roles.png)](http://badge.fury.io/gh/cleverstack%2Fclever-roles) [![Dependency Status](https://david-dm.org/CleverStack/clever-roles.png)](https://david-dm.org/CleverStack/clever-roles) [![devDependency Status](https://david-dm.org/CleverStack/clever-roles/dev-status.png)](https://david-dm.org/CleverStack/clever-roles#info=devDependencies) [![Code Climate](https://codeclimate.com/github/CleverStack/clever-roles.png)](https://codeclimate.com/github/CleverStack/clever-roles) 
 [![Build Status](https://secure.travis-ci.org/CleverStack/clever-roles.png?branch=master)](https://travis-ci.org/CleverStack/clever-roles) 
@@ -7,7 +7,7 @@ CleverStack ORM Module
 
 ![CleverStack NodeJS ORM Module](http://cleverstack.github.io/assets/img/logos/node-seed-logo-clean.png "CleverStack NodeJS ORM Module")
 <blockquote>
-This CleverStack Module provides Roles for your users, use this with the clever-auth module.
+This CleverStack Module provides Roles for your users, use this with the clever-auth module. (This only works with ORM currently)
 </blockquote>
 
 ## Documentation
