@@ -1,5 +1,13 @@
 module.exports = function ( Controller, RoleService ) {
-    return Controller.extend({
+    return Controller.extend(
+    {
+        requiresRole: function( role ) {
+            return function( req, res, next ) {
+                next();
+            }
+        }
+    },
+    {
         service: PermissionService,
 
         listAction: function () {
