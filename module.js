@@ -1,5 +1,3 @@
-var cleverRoleModule = require( 'classes' ).ModuleClass.extend( {
+module.exports = ( require( 'classes' ).Module ).extend({
 
-} );
-
-module.exports = new cleverRoleModule( 'clever-roles', injector );
+});

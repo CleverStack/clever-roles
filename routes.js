@@ -9,11 +9,11 @@ module.exports = function ( app, RoleController, PermissionController ) {
 //
 //    app.get('/permissions',                                             UserController.requiresLogin, PermissionController.attach());
 
-    app.get('/roles' ,              RoleController.attach());
-    app.post('/roles' ,             RoleController.attach());
-    app.post('/roles/:id/assign/?', RoleController.attach());
-    app.post('/roles/:id' ,         RoleController.attach());
-    app['delete']('/roles/:id' ,    RoleController.attach());
+    // app.get('/roles' ,              RoleController.attach());
+    // app.post('/roles' ,             RoleController.attach());
+    // app.post('/roles/:id/assign/?', RoleController.attach());
+    // app.post('/roles/:id' ,         RoleController.attach());
+    // app['delete']('/roles/:id' ,    RoleController.attach());
 
-    app.get('/permissions',         PermissionController.attach());
+    // app.get('/permissions',         PermissionController.attach());
 };
