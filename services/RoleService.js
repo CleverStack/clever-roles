@@ -1,70 +1,28 @@
-var RoleService = null
-  , Q = require ( 'q' )
-  , _ = require ( 'lodash' )
-  , configSysRoles = require ( 'config' )[ 'clever-roles' ][ 'clever-system-role' ];
+var RoleService     = null
+  , configSysRoles  = require ( 'config' )[ 'clever-roles' ][ 'clever-system-role' ]
+  , Promise         = require( 'bluebird' )
+  , Q               = require ( 'q' )
+  , _               = require ( 'lodash' );
 
-module.exports = function ( sequelize,
-                            ORMRoleModel,
-                            ORMPermissionModel,
-                            ORMUserModel ) {
+module.exports = function ( Service, RoleModel, PermissionModel ) {
+    return Service.extend({
+        model: RoleModel,
 
-    if ( RoleService && RoleService.instance ) {
-        return RoleService.instance;
-    }
-
-    RoleService = require ( 'services' ).BaseService.extend ( {
-
-        listRolesWithPerm: function () {
-            var deferred = Q.defer ()
-              , service = this
-              , sql = 'select t1.id, t1.name, t1.description, t3.id as permid, t3.action, t3.description as perm_description '
-                    + 'from Roles t1'
-                    + ' left join PermissionsRoles t2 on t1.id = t2.RoleId'
-                    + ' left join Permissions t3 on t2.PermissionId = t3.id'
-                    + ' ;';
-
-            this
-                .query ( sql )
-                .success ( function ( roles ) {
-
-                    if ( !roles ) {
-                        return deferred.resolve ( [] )
-                    }
-
-                    service.getRoleCounts ( roles )
-                        .then ( deferred.resolve )
-                        .fail ( deferred.reject );
-                } )
-                .error ( deferred.reject );
-
-            return deferred.promise;
+        listRolesWithPerm: function() {
+            return RoleModel
+                .findAll({
+                    include: [ PermissionModel ]
+                })
+                .then( this.getRoleCounts );
         },
 
         getRoleWithPerms: function ( roleId ) {
-            var deferred = Q.defer ()
-              , service = this
-              , sql = 'select t1.id, t1.name, t1.description, t3.id as permid, t3.action, t3.description as perm_description '
-                    + 'from Roles t1'
-                    + ' left join PermissionsRoles t2 on t1.id = t2.RoleId'
-                    + ' left join Permissions t3 on t2.PermissionId = t3.id'
-                    + ' where t1.id = ' + roleId
-                    + ' ;';
-
-            this
-                .query ( sql )
-                .success ( function ( role ) {
-
-                    if ( !role ) {
-                        return deferred.resolve ( {} )
-                    }
-
-                    service.getRoleCounts ( role )
-                        .then ( deferred.resolve )
-                        .fail ( deferred.reject );
-                } )
-                .error ( deferred.reject );
-
-            return deferred.promise;
+            return RoleModel
+                .findOne({
+                    where: { id: roleId },
+                    include: [ PermissionModel ]
+                })
+                .then( this.getRoleCounts );
         },
 
         getRoleCounts: function ( roles ) {
@@ -390,10 +348,5 @@ module.exports = function ( sequelize,
             return arr;
         }
 
-    } );
-
-    RoleService.instance = new RoleService ( sequelize );
-    RoleService.Model = ORMRoleModel;
-
-    return RoleService.instance;
+    });
 };

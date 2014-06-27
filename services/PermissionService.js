@@ -1,83 +1,53 @@
-var Q = require ( 'q' )
-  , PermissionService = null;
+var Promise = require( 'bluebird' );
 
-module.exports = function ( sequelize,
-                            ORMPermissionModel,
-                            ORMRoleModel ) {
+module.exports = function ( Service, PermissionModel, RoleModel ) {
+    return Service.extend({
+        model: PermissionModel,
 
-    if ( PermissionService && PermissionService.instance ) {
-        return PermissionService.instance;
-    }
+        hasPermissions: function ( req, permissions, booleanLogic ) {
+            return new Promise( function( resolve, reject ) {
+                permissions = Array.isArray ( permissions ) ? permissions : [ permissions ];
 
-    PermissionService = require ( 'services' ).BaseService.extend ( {
+                booleanLogic = booleanLogic === "any" ? 'any' : 'all';
 
-        list: function () {
-            var deferred = Q.defer ();
+                var isAuthed = req.isAuthenticated () && req.user.role
+                  , booleanCount = 0;
 
-            ORMPermissionModel
-                .findAll ()
-                .success ( function ( perms ) {
-                    deferred.resolve ( perms.map ( function ( x ) { return x.toJSON (); } ) );
-                } )
-                .error ( deferred.reject );
+                if ( !isAuthed ) {
+                    return reject( 'User is not authorized' );
+                }
 
-            return deferred.promise;
-        },
+                if ( req.user && req.user.hasAdminRight === true ) {
+                    return resolve();
+                }
 
-        hasPermissions: function ( req, permissions, booleanLogic, fn ) {
-            permissions = Array.isArray ( permissions )
-                ? permissions
-                : [ permissions ];
+                if ( !permissions.length ) {
+                    return resolve();
+                }
 
-            if ( typeof booleanLogic === "function" ) {
-                fn = booleanLogic;
-                booleanLogic = 'all';
-            }
-
-            booleanLogic = booleanLogic === "any" ? 'any' : 'all';
-
-            var isAuthed = req.isAuthenticated () && req.user.role
-                , booleanCount = 0;
-
-            if ( !isAuthed ) {
-                return fn ( null, false );
-            }
-
-            if ( req.user && req.user.hasAdminRight === true ) {
-                return fn ( null, true );
-            }
-
-            if ( !permissions.length ) {
-                return fn ( null, true );
-            }
-
-            ORMRoleModel.find ( {
+                RoleModel.find({
                     where: { id: req.user.role.id },
-                    include: [ ORMPermissionModel ]
-                } )
-                .success ( function ( userPermissions ) {
+                    include: [ PermissionModel ]
+                })
+                .success( function( userPermissions ) {
                     if ( !userPermissions.permissions.length ) {
-                        fn ( null, false );
+                        resolve();
                     }
 
-                    var permissionArray = userPermissions.permissions.map ( function ( perm ) {
+                    var permissionArray = userPermissions.permissions.map( function( perm ) {
                         return perm.action;
-                    } );
+                    });
 
-                    permissionArray.forEach ( function ( perm ) {
-                        if ( ~permissions.indexOf ( perm ) ) {
+                    permissionArray.forEach( function( perm ) {
+                        if ( ~permissions.indexOf( perm ) ) {
                             ++booleanCount;
                         }
-                    } );
+                    });
 
-                    fn ( null, (booleanLogic === "any" && booleanCount > 0) || (booleanLogic === "all" && booleanCount === permissions.length) );
-                } )
-                .error ( fn );
-        }
-    } );
-
-    PermissionService.instance = new PermissionService ( sequelize );
-    PermissionService.Model = ORMPermissionModel;
-
-    return PermissionService.instance;
-};
+                    resolve( ( booleanLogic === "any" && booleanCount > 0 ) || ( booleanLogic === "all" && booleanCount === permissions.length ) );
+                })
+                .error( reject );
+            });
+        } 
+    });
+}
