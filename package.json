@@ -1,17 +1,16 @@
 {
     "name": "clever-roles",
-    "version": "0.0.2",
-    "dependencies": {
-        "lodash": "2.4.1"
-    },
-    "author": {
-        "name": "Clevertech",
-        "email": "info@clevertech.biz",
-        "web": "http://www.clevertech.biz"
-    },
-    "main": "module.js",
     "description": "Adds permissions and roles to users with CleverStack",
-    "license": "BSD-2-Clause",
+    "version": "1.0.0",
+    "main": "module.js",
+    "author": {
+        "name": "CleverStack",
+        "email": "admin@cleverstack.io",
+        "web": "http://cleverstack.io"
+    },
+    "collaborators": [
+        "Richard Gustin <richard.gustin86@gmail.com>"
+    ],
     "repository": {
         "type": "git",
         "url": "git://github.com/CleverStack/clever-roles.git"
@@ -23,9 +22,21 @@
         "cleverstack",
         "cleverstack-module",
         "cleverstack-modules",
-        "cleverstack-backend"
+        "cleverstack-backend",
+        "roles",
+        "role based authentication",
+        "role based access control",
+        "rbac",
+        "authentication"
     ],
-    "devDependencies": {},
+    "license": "BSD-2-Clause",
+    "dependencies": {
+        "lodash": "~2.4.1"
+    },
+    "devDependencies": {
+        "grunt": "~0.4.2",
+        "grunt-prompt": "~1.1.0"
+    },
     "bundledDependencies": [
         "clever-orm",
         "clever-auth"
