@@ -1,7 +1,6 @@
 var RoleService     = null
   , configSysRoles  = require ( 'config' )[ 'clever-roles' ][ 'clever-system-role' ]
   , Promise         = require( 'bluebird' )
-  , Q               = require ( 'q' )
   , _               = require ( 'lodash' );
 
 module.exports = function ( Service, RoleModel, PermissionModel ) {
@@ -26,7 +25,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         getRoleCounts: function ( roles ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , service = this
               , roles = Array.isArray ( roles ) ? roles : [ roles ]
               , _where = { RoleId: _.uniq ( roles.map ( function ( r ) { return r.id; } ) ) };
@@ -58,7 +57,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         assignRole: function ( userIds, removed, role ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , promise = []
               , _set = {}
               , _where = {};
@@ -123,7 +122,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         createRoleWithPermissions: function ( data ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , service = this;
 
             service
@@ -138,7 +137,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         saveNewRole: function ( data ) {
-            var deferred = Q.defer ();
+            var deferred = Promise.defer ();
 
             var roledata = {
                 name: data.name,
@@ -154,7 +153,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         saveRolePermissions: function ( role, permIds ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , permissions = [];
 
             if ( !permIds || !permIds.length ) {
@@ -190,7 +189,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         updateRoleWithPermissions: function ( data ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , service = this;
 
 
@@ -211,7 +210,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         updateRole: function ( role, data ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , roleData = {
                     name: data.name
                 };
@@ -229,7 +228,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         removeRoleWithPermissions: function ( id ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , service = this;
 
             ORMRoleModel
@@ -261,7 +260,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         removeRole: function ( role ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , roleId = role.id
               , service = this
               , systemRoles = configSysRoles
@@ -305,7 +304,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         },
 
         removePermissions: function ( role ) {
-            var deferred = Q.defer ()
+            var deferred = Promise.defer ()
               , sql = 'delete from PermissionsRoles where RoleId = ' + role.id + ' ;';
 
             this.query ( sql )

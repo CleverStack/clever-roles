@@ -1,4 +1,4 @@
-module.exports = function ( Controller, RoleService ) {
+module.exports = function ( Controller, RoleService, PermissionService ) {
     return Controller.extend(
     {
         requiresRole: function( role ) {
