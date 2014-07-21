@@ -14,14 +14,14 @@ module.exports = function ( Controller, RoleService, PermissionService ) {
             RoleService
                 .listRolesWithPerm()
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
         },
 
         getAction: function () {
             RoleService
                 .getRoleWithPerms( this.req.params.id )
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
 
         },
 
@@ -35,7 +35,7 @@ module.exports = function ( Controller, RoleService, PermissionService ) {
             RoleService
                 .createRoleWithPermissions( data )
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
         },
 
         putAction: function () {
@@ -49,7 +49,7 @@ module.exports = function ( Controller, RoleService, PermissionService ) {
             RoleService
                 .updateRoleWithPermissions( data )
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
 
         },
 
@@ -57,7 +57,7 @@ module.exports = function ( Controller, RoleService, PermissionService ) {
             RoleService
                 .removeRoleWithPermissions( this.req.params.id )
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
         },
 
         assignAction: function () {
@@ -77,7 +77,7 @@ module.exports = function ( Controller, RoleService, PermissionService ) {
                     return RoleService.getRoleCounts( role, accId );
                 })
                 .then( this.proxy( 'handleServiceMessage' ) )
-                .fail( this.proxy( 'handleException' ) );
+                .catch( this.proxy( 'handleException' ) );
         }
 
     });
