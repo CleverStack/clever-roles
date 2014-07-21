@@ -1,25 +1,90 @@
 {
+    "PermissionModel": [
+        {
+            "action": "User.create",
+            "description": "Create user."
+        },
+        {
+            "action": "User.edit",
+            "description": "Edit user."
+        },
+        {
+            "action": "User.view",
+            "description": "View users."
+        },
+        {
+            "action": "User.delete",
+            "description": "Delete user."
+        },
+        {
+            "action": "User.assignRole",
+            "description": "Assign user/s to a role."
+        },
+
+        {
+            "action": "Permission.create",
+            "description": "Create permission."
+        },
+        {
+            "action": "Permission.edit",
+            "description": "Edit permission."
+        },
+        {
+            "action": "Permission.view",
+            "description": "View permission."
+        },
+        {
+            "action": "Permission.delete",
+            "description": "Delete permission."
+        },
+        {
+            "action": "Permission.assignRole",
+            "description": "Assign permission/s to role/s."
+        }
+    ],
     "RoleModel": [
         {
-            "name": "Owner"
+            "name": "Super Admin",
+            "isSystemRole": true,
+            "associations": {
+                "PermissionModel": [
+                    { "action": "User.create" },
+                    { "action": "User.edit" },
+                    { "action": "User.view" },
+                    { "action": "User.delete" },
+                    { "action": "User.assignRole" },
+                    { "action": "Permission.create" },
+                    { "action": "Permission.edit" },
+                    { "action": "Permission.view" },
+                    { "action": "Permission.delete" },
+                    { "action": "Permission.assignRole" }
+                ]
+            }
         },
         {
-            "name": "Super Admin"
+            "name": "Manager",
+            "isSystemRole": true,
+            "associations": {
+                "PermissionModel": [
+                    { "action": "User.create" },
+                    { "action": "User.edit" },
+                    { "action": "User.view" },
+                    { "action": "User.delete" },
+                    { "action": "Permission.create" },
+                    { "action": "Permission.edit" },
+                    { "action": "Permission.view" },
+                    { "action": "Permission.delete" }
+                ]
+            }
         },
         {
-            "name": "HR Manager"
-        },
-        {
-            "name": "HR Assistant"
-        },
-        {
-            "name": "Business Unit Manager"
-        },
-        {
-            "name": "Recruiter"
-        },
-        {
-            "name": "General User"
+            "name": "General User",
+            "isSystemRole": true,
+            "associations": {
+                "PermissionModel": [
+                    { "action": "User.view" }
+                ]
+            }
         }
     ]
 }
