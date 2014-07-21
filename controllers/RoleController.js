@@ -1,6 +1,12 @@
-module.exports = function ( Controller, RoleService, PermissionService ) {
+module.exports = function ( Controller, RoleService, PermissionService, PermissionController ) {
     return Controller.extend(
     {
+        autoRouting: [
+            PermissionController.requiresPermission({
+                all: 'Role.$action'
+            })
+        ],
+
         requiresRole: function( role ) {
             return function( req, res, next ) {
                 next();

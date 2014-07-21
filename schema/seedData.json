@@ -1,45 +1,72 @@
 {
     "PermissionModel": [
         {
-            "action": "User.create",
-            "description": "Create user."
-        },
-        {
-            "action": "User.edit",
-            "description": "Edit user."
+            "action": "User.list",
+            "description": "View users list."
         },
         {
             "action": "User.view",
-            "description": "View users."
+            "description": "View a user."
+        },
+        {
+            "action": "User.create",
+            "description": "Create a user."
+        },
+        {
+            "action": "User.edit",
+            "description": "Edit a user."
         },
         {
             "action": "User.delete",
-            "description": "Delete user."
+            "description": "Delete a user."
         },
         {
             "action": "User.assignRole",
             "description": "Assign user/s to a role."
         },
-
         {
-            "action": "Permission.create",
-            "description": "Create permission."
-        },
-        {
-            "action": "Permission.edit",
-            "description": "Edit permission."
+            "action": "Permission.list",
+            "description": "View permissions list."
         },
         {
             "action": "Permission.view",
-            "description": "View permission."
+            "description": "View a permission."
+        },
+        {
+            "action": "Permission.create",
+            "description": "Create a permission."
+        },
+        {
+            "action": "Permission.edit",
+            "description": "Edit a permission."
         },
         {
             "action": "Permission.delete",
-            "description": "Delete permission."
+            "description": "Delete a permission."
         },
         {
             "action": "Permission.assignRole",
-            "description": "Assign permission/s to role/s."
+            "description": "Assign permission/s to a role."
+        },
+        {
+            "action": "Feedback.list",
+            "description": "View feedback list."
+        },
+        {
+            "action": "Feedback.view",
+            "description": "View a feedback."
+        },
+        {
+            "action": "Feedback.create",
+            "description": "Create a feedback."
+        },
+        {
+            "action": "Feedback.edit",
+            "description": "Edit a feedback."
+        },
+        {
+            "action": "Feedback.delete",
+            "description": "Delete a feedback."
         }
     ],
     "RoleModel": [
@@ -48,16 +75,24 @@
             "isSystemRole": true,
             "associations": {
                 "PermissionModel": [
+                    { "action": "User.list" },
+                    { "action": "User.view" },
                     { "action": "User.create" },
                     { "action": "User.edit" },
-                    { "action": "User.view" },
                     { "action": "User.delete" },
                     { "action": "User.assignRole" },
+                    { "action": "Permission.list" },
+                    { "action": "Permission.view" },
                     { "action": "Permission.create" },
                     { "action": "Permission.edit" },
-                    { "action": "Permission.view" },
                     { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" }
+                    { "action": "Permission.assignRole" },
+                    { "action": "Feedback.list" },
+                    { "action": "Feedback.view" },
+                    { "action": "Feedback.create" },
+                    { "action": "Feedback.edit" },
+                    { "action": "Feedback.delete" },
+                    { "action": "Feedback.assignRole" }
                 ]
             }
         },
@@ -68,10 +103,12 @@
                 "PermissionModel": [
                     { "action": "User.create" },
                     { "action": "User.edit" },
+                    { "action": "User.list" },
                     { "action": "User.view" },
                     { "action": "User.delete" },
                     { "action": "Permission.create" },
                     { "action": "Permission.edit" },
+                    { "action": "Permission.list" },
                     { "action": "Permission.view" },
                     { "action": "Permission.delete" }
                 ]
