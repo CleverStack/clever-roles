@@ -10,7 +10,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         listRolesWithPerm: function() {
             return RoleModel
                 .findAll({
-                    include: [ PermissionModel ]
+                    include: [ PermissionModel._model ]
                 })
                 .then( this.getRoleCounts );
         },
@@ -19,42 +19,41 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
             return RoleModel
                 .findOne({
                     where: { id: roleId },
-                    include: [ PermissionModel ]
-                })
-                .then( this.getRoleCounts );
+                    include: [ PermissionModel._model ]
+                });
         },
+        
+        // getRoleCounts: function ( roles ) {
+        //     var deferred = Promise.defer ()
+        //       , service = this
+        //       , roles = Array.isArray ( roles ) ? roles : [ roles ]
+        //       , _where = { RoleId: _.uniq ( roles.map ( function ( r ) { return r.id; } ) ) };
 
-        getRoleCounts: function ( roles ) {
-            var deferred = Promise.defer ()
-              , service = this
-              , roles = Array.isArray ( roles ) ? roles : [ roles ]
-              , _where = { RoleId: _.uniq ( roles.map ( function ( r ) { return r.id; } ) ) };
+        //     ORMUserModel
+        //         .all ( { attributes: [ 'RoleId', ['count( id )', 'count']], where: _where, group: 'RoleId'} )
+        //         .success ( function ( counts ) {
 
-            ORMUserModel
-                .all ( { attributes: [ 'RoleId', ['count( id )', 'count']], where: _where, group: 'RoleId'} )
-                .success ( function ( counts ) {
+        //             if ( !counts || !counts.length ) {
+        //                 return deferred.resolve ( service.groupRolePermissions ( roles ) );
+        //             }
 
-                    if ( !counts || !counts.length ) {
-                        return deferred.resolve ( service.groupRolePermissions ( roles ) );
-                    }
+        //             var _roles = service.groupRolePermissions ( roles );
 
-                    var _roles = service.groupRolePermissions ( roles );
+        //             counts.forEach ( function ( c ) {
+        //                 c = JSON.parse ( JSON.stringify ( c ) );
+        //                 var idx = _.findIndex ( _roles, function ( r ) {
+        //                     return r.id === c.RoleId;
+        //                 } );
 
-                    counts.forEach ( function ( c ) {
-                        c = JSON.parse ( JSON.stringify ( c ) );
-                        var idx = _.findIndex ( _roles, function ( r ) {
-                            return r.id === c.RoleId;
-                        } );
+        //                 _roles[ idx ].count = idx > -1 ? c.count : 0;
+        //             } );
 
-                        _roles[ idx ].count = idx > -1 ? c.count : 0;
-                    } );
+        //             deferred.resolve ( _roles );
+        //         } )
+        //         .error ( deferred.reject );
 
-                    deferred.resolve ( _roles );
-                } )
-                .error ( deferred.reject );
-
-            return deferred.promise;
-        },
+        //     return deferred.promise;
+        // },
 
         assignRole: function ( userIds, removed, role ) {
             var deferred = Promise.defer ()
