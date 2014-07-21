@@ -16,6 +16,10 @@ module.exports = function ( Model ) {
         description: {
             type: String,
             allowNull: true
+        },
+        isSystemRole: {
+            type: Boolean,
+            default: false
         }
     });
 };
