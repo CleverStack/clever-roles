@@ -10,7 +10,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
         listRolesWithPerm: function() {
             return RoleModel
                 .findAll({
-                    include: [ PermissionModel._model ]
+                    include: [ PermissionModel ]
                 })
                 .then( this.getRoleCounts );
         },
@@ -19,7 +19,7 @@ module.exports = function ( Service, RoleModel, PermissionModel ) {
             return RoleModel
                 .findOne({
                     where: { id: roleId },
-                    include: [ PermissionModel._model ]
+                    include: [ PermissionModel ]
                 });
         },
         

@@ -4,18 +4,32 @@
     },
     "clever-orm": {
         "modelAssociations": {
+            "Account": {
+                "hasMany": [
+                    "Role",
+                    "User",
+                    "Permission"
+                ]
+            },
             "User": {
                 "belongsTo": [
+                    "Account",
                     "Role"
                 ]
             },
             "Role": {
+                "belongsTo": [
+                    "Account"
+                ],
                 "hasMany": [
                     "Permission",
                     "User"
                 ]
             },
             "Permission": {
+                "belongsTo": [
+                    "Account"
+                ],
                 "hasMany": [
                     "Role"
                 ]

@@ -1,4 +1,4 @@
-module.exports = function ( Controller, RoleService, PermissionService, PermissionController ) {
+module.exports = function ( Controller, RoleService, PermissionController ) {
     return Controller.extend(
     {
         autoRouting: [
@@ -7,6 +7,8 @@ module.exports = function ( Controller, RoleService, PermissionService, Permissi
             })
         ],
 
+        service: RoleService,
+
         requiresRole: function( role ) {
             return function( req, res, next ) {
                 next();
@@ -14,23 +16,6 @@ module.exports = function ( Controller, RoleService, PermissionService, Permissi
         }
     },
     {
-        service: PermissionService,
-
-        listAction: function () {
-            RoleService
-                .listRolesWithPerm()
-                .then( this.proxy( 'handleServiceMessage' ) )
-                .catch( this.proxy( 'handleException' ) );
-        },
-
-        getAction: function () {
-            RoleService
-                .getRoleWithPerms( this.req.params.id )
-                .then( this.proxy( 'handleServiceMessage' ) )
-                .catch( this.proxy( 'handleException' ) );
-
-        },
-
         postAction: function () {
             var data = this.req.body;
 
