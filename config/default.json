@@ -1,6 +1,10 @@
 {
     "clever-roles": {
-        
+        "driver": "ORM",
+        "account": {
+            "enabled": true,
+            "blockedEmailDomains": "@(gmail|mail|yahoo|aol|aim|hotmail|facebook|cox|verizon|icloud|apple|outlook|yandex|163|126|gmx)\\."
+        }
     },
     "clever-orm": {
         "modelAssociations": {
@@ -9,6 +13,9 @@
                     "Role",
                     "User",
                     "Permission"
+                ],
+                "belongsTo": [
+                    "Subscription"
                 ]
             },
             "User": {

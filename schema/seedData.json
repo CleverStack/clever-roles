@@ -3,18 +3,86 @@
         {
             "name": "Default Account",
             "subdomain": "dev",
-            "emailFwd" : "somedomain.app.com",
+            "emailFwd" : "devi01s3.dev.canary.com",
             "active": true,
             "associations": {
                 "RoleModel": [
                     { "name": "Super Admin" },
                     { "name": "Manager" },
                     { "name": "General User" }
+                ],
+                "SubscriptionModel": {
+                    "name": "Trial Package for Default Account"
+                }
+            }
+        },
+        {
+            "name": "Testing Account",
+            "subdomain": "devtesting",
+            "emailFwd" : "devtesting92A5.dev.canary.com",
+            "active": true,
+            "associations": {
+                "RoleModel": [
+                    { "name": "Super Admin", "assocations": { "AccountModel": [ { "name": "Testing Account"} ] } }
                 ]
             }
         }
     ],
     "RoleModel": [
+        {
+            "name": "Super Admin",
+            "isSystemRole": true,
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ],
+                "PermissionModel": [
+                    { "action": "Account.list" },
+                    { "action": "Account.view" },
+                    { "action": "Account.create" },
+                    { "action": "Account.edit" },
+                    { "action": "Account.delete" },
+                    { "action": "User.list" },
+                    { "action": "User.view" },
+                    { "action": "User.create" },
+                    { "action": "User.edit" },
+                    { "action": "User.delete" },
+                    { "action": "User.assignRole" },
+                    { "action": "Role.list" },
+                    { "action": "Role.view" },
+                    { "action": "Role.create" },
+                    { "action": "Role.edit" },
+                    { "action": "Role.delete" },
+                    { "action": "Permission.list" },
+                    { "action": "Permission.view" },
+                    { "action": "Permission.create" },
+                    { "action": "Permission.edit" },
+                    { "action": "Permission.delete" },
+                    { "action": "Permission.assignRole" },
+                    { "action": "Feedback.list" },
+                    { "action": "Feedback.view" },
+                    { "action": "Feedback.create" },
+                    { "action": "Feedback.edit" },
+                    { "action": "Feedback.delete" },
+                    { "action": "Feedback.assignRole" },
+                    { "action": "Campaign.list" },
+                    { "action": "Campaign.view" },
+                    { "action": "Campaign.create" },
+                    { "action": "Campaign.edit" },
+                    { "action": "Campaign.delete" },
+                    { "action": "CampaignItem.list" },
+                    { "action": "CampaignItem.view" },
+                    { "action": "CampaignItem.create" },
+                    { "action": "CampaignItem.edit" },
+                    { "action": "CampaignItem.delete" },
+                    { "action": "Subscription.list" },
+                    { "action": "Subscription.view" },
+                    { "action": "Subscription.create" },
+                    { "action": "Subscription.edit" },
+                    { "action": "Subscription.delete" }
+                ]
+            }
+        },
         {
             "name": "Super Admin",
             "isSystemRole": true,
@@ -44,7 +112,28 @@
                     { "action": "Permission.create" },
                     { "action": "Permission.edit" },
                     { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" }
+                    { "action": "Permission.assignRole" },
+                    { "action": "Feedback.list" },
+                    { "action": "Feedback.view" },
+                    { "action": "Feedback.create" },
+                    { "action": "Feedback.edit" },
+                    { "action": "Feedback.delete" },
+                    { "action": "Feedback.assignRole" },
+                    { "action": "Campaign.list" },
+                    { "action": "Campaign.view" },
+                    { "action": "Campaign.create" },
+                    { "action": "Campaign.edit" },
+                    { "action": "Campaign.delete" },
+                    { "action": "CampaignItem.list" },
+                    { "action": "CampaignItem.view" },
+                    { "action": "CampaignItem.create" },
+                    { "action": "CampaignItem.edit" },
+                    { "action": "CampaignItem.delete" },
+                    { "action": "Subscription.list" },
+                    { "action": "Subscription.view" },
+                    { "action": "Subscription.create" },
+                    { "action": "Subscription.edit" },
+                    { "action": "Subscription.delete" }
                 ]
             }
         },
@@ -283,6 +372,204 @@
             "associations": {
                 "AccountModel": [
                     { "name": "Default Account" }
+                ]
+            }
+        },
+        {
+            "action": "Account.list",
+            "description": "View accounts list.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Account.view",
+            "description": "View an account.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Account.create",
+            "description": "Create an account.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Account.edit",
+            "description": "Edit an account.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Account.delete",
+            "description": "Delete an account.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.list",
+            "description": "View users list.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.view",
+            "description": "View a user.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.create",
+            "description": "Create a user.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.edit",
+            "description": "Edit a user.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.delete",
+            "description": "Delete a user.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "User.assignRole",
+            "description": "Assign user/s to a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.list",
+            "description": "View permissions list.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.view",
+            "description": "View a permission.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.create",
+            "description": "Create a permission.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.edit",
+            "description": "Edit a permission.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.delete",
+            "description": "Delete a permission.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Permission.assignRole",
+            "description": "Assign permission/s to a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Role.list",
+            "description": "View roles list.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Role.view",
+            "description": "View a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Role.create",
+            "description": "Create a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Role.edit",
+            "description": "Edit a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
+                ]
+            }
+        },
+        {
+            "action": "Role.delete",
+            "description": "Delete a role.",
+            "associations": {
+                "AccountModel": [
+                    { "name": "Testing Account" }
                 ]
             }
         }

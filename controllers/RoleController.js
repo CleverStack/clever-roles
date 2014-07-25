@@ -1,13 +1,13 @@
 module.exports = function ( Controller, RoleService, PermissionController ) {
     return Controller.extend(
     {
+        service: RoleService,
+        
         autoRouting: [
             PermissionController.requiresPermission({
                 all: 'Role.$action'
             })
         ],
-
-        service: RoleService,
 
         requiresRole: function( role ) {
             return function( req, res, next ) {
@@ -16,41 +16,52 @@ module.exports = function ( Controller, RoleService, PermissionController ) {
         }
     },
     {
-        postAction: function () {
-            var data = this.req.body;
+        listAction: function() {
+            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
+                return this.send( 200, [] );
+            }
+            this.req.query.AccountId = this.req.user.account.id;
+            this._super.apply( this, arguments );
+        },
 
-            if ( data.id ) {
+        getAction: function() {
+            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
+                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
+            }
+            this.req.query.AccountId = this.req.user.account.id;
+            this._super.apply( this, arguments );
+        },
+
+        postAction: function () {
+            this.req.body.AccountId = this.req.user.account.id;
+
+            if ( this.req.body.id ) {
                 return this.putAction();
             }
 
+            var data = this.req.body;
             RoleService
                 .createRoleWithPermissions( data )
                 .then( this.proxy( 'handleServiceMessage' ) )
                 .catch( this.proxy( 'handleException' ) );
         },
 
-        putAction: function () {
-            var data = this.req.body
-              , roleId = this.req.params.id;
-
-            if ( data.id != roleId ) {
-                return this.send( "Unauthorized", 403 )
+        putAction: function() {
+            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
+                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
             }
-
-            RoleService
-                .updateRoleWithPermissions( data )
-                .then( this.proxy( 'handleServiceMessage' ) )
-                .catch( this.proxy( 'handleException' ) );
-
+            this.req.query.AccountId = this.req.user.account.id;
+            this._super.apply( this, arguments );
         },
 
-        deleteAction: function () {
-            RoleService
-                .removeRoleWithPermissions( this.req.params.id )
-                .then( this.proxy( 'handleServiceMessage' ) )
-                .catch( this.proxy( 'handleException' ) );
+        deleteAction: function() {
+            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
+                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
+            }
+            this.req.query.AccountId = this.req.user.account.id;
+            this._super.apply( this, arguments );
         },
-
+        
         assignAction: function () {
             var roleId = this.req.params.id
               , users = this.req.body.users
