@@ -5,7 +5,9 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
     var PermissionController = Controller.extend(
     {  
         service: PermissionService,
-        
+
+        route: '/account/:accountId/permission/:id/?|/account/:accountId/permission/:id/:action/?|/account/:accountId/permissions/?|/account/:accountId/permissions/:action/?',
+
         autoRouting: [
             function( req, res, next ) {
                 return PermissionController.requiresPermission({
@@ -31,16 +33,22 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
             }
 
             return function( req, res, next ) {
-                var user = req.session.passport.user
-                  , method = req.method.toLowerCase()
-                  , action = req.params.action;
+                var user    = req.session.passport.user
+                  , method  = req.method.toLowerCase()
+                  , id      = req.params.id
+                  , action  = req.params.action || id;
 
-                if ( !action && method === 'get' && /^\/[^\/]+\/?$/ig.test( req.url ) ) {
+                if ( !!id && !!action && action === 'list' ) {
+                    action = 'get'
+                    req.params.action = 'get';
+                } else if ( !action && method === 'get' && /^\/.*\/(.*\/?)$/ig.test( req.url ) ) {
                     action = 'list';
                 } else if ( /^[0-9a-fA-F]{24}$/.test( action ) || !isNaN( action ) ) {
                     action = 'get';
+                } else {
+                    action = !id ? 'list' : method;
                 }
-
+                
                 async.waterfall(
                     [
                         function lazyLoadRoles( callback ) {

@@ -1,8 +1,10 @@
-module.exports = function ( Controller, RoleService, PermissionController ) {
+module.exports = function( Controller, RoleService, PermissionController ) {
     return Controller.extend(
     {
         service: RoleService,
         
+        route: '/account/:accountId/role/:id/?|/account/:accountId/role/:id/:action/?|/account/:accountId/roles/?|/account/:accountId/roles/:action/?',
+
         autoRouting: [
             PermissionController.requiresPermission({
                 all: 'Role.$action'
