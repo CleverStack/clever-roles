@@ -3,7 +3,7 @@
         {
             "name": "Default Account",
             "subdomain": "dev",
-            "emailFwd" : "devi01s3.dev.canary.com",
+            "emailFwd" : "test@cleverstack.io",
             "active": true,
             "associations": {
                 "RoleModel": [
@@ -19,11 +19,11 @@
         {
             "name": "Testing Account",
             "subdomain": "devtesting",
-            "emailFwd" : "devtesting92A5.dev.canary.com",
+            "emailFwd" : "devtesting@cleverstack.io",
             "active": true,
             "associations": {
                 "RoleModel": [
-                    { "name": "Super Admin", "assocations": { "AccountModel": [ { "name": "Testing Account"} ] } }
+                    { "name": "Super Admin", "assocations": { "AccountModel": [ { "name": "Testing Account" } ] } }
                 ]
             }
         }
@@ -58,28 +58,7 @@
                     { "action": "Permission.create" },
                     { "action": "Permission.edit" },
                     { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" },
-                    { "action": "Feedback.list" },
-                    { "action": "Feedback.view" },
-                    { "action": "Feedback.create" },
-                    { "action": "Feedback.edit" },
-                    { "action": "Feedback.delete" },
-                    { "action": "Feedback.assignRole" },
-                    { "action": "Campaign.list" },
-                    { "action": "Campaign.view" },
-                    { "action": "Campaign.create" },
-                    { "action": "Campaign.edit" },
-                    { "action": "Campaign.delete" },
-                    { "action": "CampaignItem.list" },
-                    { "action": "CampaignItem.view" },
-                    { "action": "CampaignItem.create" },
-                    { "action": "CampaignItem.edit" },
-                    { "action": "CampaignItem.delete" },
-                    { "action": "Subscription.list" },
-                    { "action": "Subscription.view" },
-                    { "action": "Subscription.create" },
-                    { "action": "Subscription.edit" },
-                    { "action": "Subscription.delete" }
+                    { "action": "Permission.assignRole" }
                 ]
             }
         },
@@ -112,28 +91,7 @@
                     { "action": "Permission.create" },
                     { "action": "Permission.edit" },
                     { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" },
-                    { "action": "Feedback.list" },
-                    { "action": "Feedback.view" },
-                    { "action": "Feedback.create" },
-                    { "action": "Feedback.edit" },
-                    { "action": "Feedback.delete" },
-                    { "action": "Feedback.assignRole" },
-                    { "action": "Campaign.list" },
-                    { "action": "Campaign.view" },
-                    { "action": "Campaign.create" },
-                    { "action": "Campaign.edit" },
-                    { "action": "Campaign.delete" },
-                    { "action": "CampaignItem.list" },
-                    { "action": "CampaignItem.view" },
-                    { "action": "CampaignItem.create" },
-                    { "action": "CampaignItem.edit" },
-                    { "action": "CampaignItem.delete" },
-                    { "action": "Subscription.list" },
-                    { "action": "Subscription.view" },
-                    { "action": "Subscription.create" },
-                    { "action": "Subscription.edit" },
-                    { "action": "Subscription.delete" }
+                    { "action": "Permission.assignRole" }
                 ]
             }
         },
