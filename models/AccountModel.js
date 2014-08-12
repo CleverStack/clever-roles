@@ -12,6 +12,14 @@ module.exports = function( Model ) {
                 len: [ 2, 50 ]
             }
         },
+        email: {
+            type: String,
+            unique: true,
+            required: true,
+            validate: {
+                isEmail: true
+            }
+        },
         subdomain: {
             type: String,
             allowNull: false,

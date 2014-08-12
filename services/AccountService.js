@@ -1,7 +1,4 @@
-var Promise = require( 'bluebird' )
-  , async   = require( 'async' );
-
-module.exports = function ( Service, AccountModel, UserModel, RoleModel, sequelize ) {
+module.exports = function ( Promise, Service, AccountModel, UserModel, RoleModel, sequelize, async ) {
     return Service.extend({
         model: AccountModel,
 

@@ -4,17 +4,17 @@ module.exports = function( Controller, AccountService, PermissionController, con
     {
         service: AccountService,
 
+        route: [
+            '/account/:id/?',
+            '/account/:id/:action((?!(role|roles|permission|permissions|user|users)).)*/?',
+            '/accounts/?',
+            '/accounts/:action/?'
+        ],
+
         autoRouting: [
             PermissionController.requiresPermission({
                 all: 'Account.$action',
-                postAction: [
-                    function( req, res, next ) {
-                        return AccountController.formatData( req, res, next );
-                    },
-                    function( req, res, next ) {
-                        return AccountController.requiresUniqueSubdomain( req, res, next );
-                    }
-                ]
+                postAction: false
             })
         ],
 
