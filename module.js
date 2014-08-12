@@ -1,6 +1,6 @@
 module.exports = require( 'classes' ).Module.extend({
     preRoute: function() {
-        require( 'injector' ).inject( function( AccountModel, UserModel, RoleModel, PermissionModel, SubscriptionModel ) {
+        require( 'injector' ).inject( function( AccountModel, UserModel, RoleModel, PermissionModel ) {
             UserModel.on( 'preQuery', function( options ) {
                 UserModel.debug( 'UserModel:preQuery(include:[])' );
                 if ( typeof options.include === 'undefined' ) {
@@ -21,9 +21,6 @@ module.exports = require( 'classes' ).Module.extend({
                 }
                 if ( options.include.indexOf( RoleModel ) === -1 ) {
                     options.include.push( RoleModel );
-                }
-                if ( options.include.indexOf( SubscriptionModel ) === -1 ) {
-                    options.include.push( SubscriptionModel );
                 }
                 if ( options.include.indexOf( PermissionModel ) === -1 ) {
                     options.include.push( PermissionModel );
