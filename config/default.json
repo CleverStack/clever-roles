@@ -6,6 +6,7 @@
             "blockedEmailDomains": "@(gmail|mail|yahoo|aol|aim|hotmail|facebook|cox|verizon|icloud|apple|outlook|yandex|163|126|gmx)\\."
         }
     },
+
     "clever-orm": {
         "modelAssociations": {
             "Account": {
@@ -13,15 +14,6 @@
                     "Role",
                     "User",
                     "Permission"
-                ],
-                "belongsTo": [
-                    "Subscription"
-                ]
-            },
-            "User": {
-                "belongsTo": [
-                    "Account",
-                    "Role"
                 ]
             },
             "Role": {
@@ -38,6 +30,14 @@
                     "Account"
                 ],
                 "hasMany": [
+                    "Role"
+                ]
+            },
+            "User": {
+                "belongsTo": [
+                    "Account"
+                ],
+                "hasOne": [
                     "Role"
                 ]
             }
