@@ -2,12 +2,12 @@
     "AccountModel": [
         {
             "name": "Default Account",
-            "subdomain": "dev",
-            "emailFwd" : "test@cleverstack.io",
+            "emailFwd": "test@cleverstack.io",
+            "subdomain" : "devi01s3.localhost:8080",
             "active": true,
             "associations": {
                 "RoleModel": [
-                    { "name": "Super Admin" },
+                    { "name": "Super Admin (Default Account)" },
                     { "name": "Manager" },
                     { "name": "General User" }
                 ],
@@ -15,55 +15,11 @@
                     "name": "Trial Package for Default Account"
                 }
             }
-        },
-        {
-            "name": "Testing Account",
-            "subdomain": "devtesting",
-            "emailFwd" : "devtesting@cleverstack.io",
-            "active": true,
-            "associations": {
-                "RoleModel": [
-                    { "name": "Super Admin", "assocations": { "AccountModel": [ { "name": "Testing Account" } ] } }
-                ]
-            }
         }
     ],
     "RoleModel": [
         {
-            "name": "Super Admin",
-            "isSystemRole": true,
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ],
-                "PermissionModel": [
-                    { "action": "Account.list" },
-                    { "action": "Account.view" },
-                    { "action": "Account.create" },
-                    { "action": "Account.edit" },
-                    { "action": "Account.delete" },
-                    { "action": "User.list" },
-                    { "action": "User.view" },
-                    { "action": "User.create" },
-                    { "action": "User.edit" },
-                    { "action": "User.delete" },
-                    { "action": "User.assignRole" },
-                    { "action": "Role.list" },
-                    { "action": "Role.view" },
-                    { "action": "Role.create" },
-                    { "action": "Role.edit" },
-                    { "action": "Role.delete" },
-                    { "action": "Permission.list" },
-                    { "action": "Permission.view" },
-                    { "action": "Permission.create" },
-                    { "action": "Permission.edit" },
-                    { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" }
-                ]
-            }
-        },
-        {
-            "name": "Super Admin",
+            "name": "Super Admin (Default Account)",
             "isSystemRole": true,
             "associations": {
                 "AccountModel": [
