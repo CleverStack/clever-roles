@@ -1,22 +1,22 @@
 {
-    "name": "clever-roles",
-    "description": "Adds permissions and roles to users with CleverStack",
-    "version": "1.0.0",
-    "main": "module.js",
+    "name":         "clever-roles",
+    "description":  "Adds permissions and roles to users with CleverStack",
+    "version":      "1.0.1",
+    "main":         "module.js",
     "author": {
-        "name": "CleverStack",
-        "email": "admin@cleverstack.io",
-        "web": "http://cleverstack.io"
+        "name":     "CleverStack",
+        "email":    "admin@cleverstack.io",
+        "web":      "http://cleverstack.io"
     },
     "collaborators": [
         "Richard Gustin <richard.gustin86@gmail.com>"
     ],
     "repository": {
-        "type": "git",
-        "url": "git://github.com/CleverStack/clever-roles.git"
+        "type":     "git",
+        "url":      "git://github.com/CleverStack/clever-roles.git"
     },
     "bugs": {
-        "url": "https://github.com/CleverStack/clever-roles/issues"
+        "url":      "https://github.com/CleverStack/clever-roles/issues"
     },
     "keywords": [
         "cleverstack",
@@ -29,16 +29,15 @@
         "rbac",
         "authentication"
     ],
-    "license": "BSD-2-Clause",
+    "license":      "BSD-2-Clause",
     "dependencies": {
-        "lodash": "~2.4.1"
+        "lodash":       "~2.4.1"
     },
     "devDependencies": {
-        "grunt": "~0.4.2",
+        "grunt":        "~0.4.2",
         "grunt-prompt": "~1.1.0"
     },
     "bundledDependencies": [
-        "clever-orm",
         "clever-auth"
     ]
 }
