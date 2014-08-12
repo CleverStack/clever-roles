@@ -1,74 +1,56 @@
-var expect = require( 'chai' ).expect
-  , testEnv = require( 'utils' ).testEnv();
+var expect      = require( 'chai' ).expect
+  , sinon       = require( 'sinon' )
+  , injector    = require( 'injector' )
+  , roleModule
+  , Controller
+  , Service;
 
-var Controller
-  , Service
-  , Model;
+describe( 'CleverRoles.Controller.PermissionController', function () {
 
-describe ( 'controllers.PermissionController', function () {
+    before( function( done ) {
+        roleModule      = injector.getInstance( 'cleverRoles' );
+        Controller      = roleModule.controllers.PermissionController;
+        Service         = roleModule.services.PermissionService;
 
-    before( function ( done ) {
-        testEnv( function ( _PermissionController_, _PermissionService_, _ORMPermissionModel_ ) {
-            var req = {
-                params: { action: 'fakeAction'},
-                method: 'GET',
-                query: {}
-            };
-
-            var res = {
-                json: function () {}
-            };
-
-            var next = function () {};
-
-            Controller = _PermissionController_;
-            Service = _PermissionService_;
-            Model = _ORMPermissionModel_;
-
-            ctrl = new Controller( req, res, next );
-
-            done();
-        });
-    } );
-
-    describe('.listAction()', function() {
-
-        before ( function ( done ) {
-            var permissions = [
-                    {
-                        action: 'test_view',
-                        description: 'This is the test permissions for view'
-                    },
-                    {
-                        action: 'test_save',
-                        description: 'This is the test permissions for save'
-                    }
-                ];
-
-            Model
-                .bulkCreate ( permissions )
-                .success ( function () {
-                    done();
-                })
-                .error ( done );
-        } );
-
-        it('should allow us to get list of permissions', function ( done ) {
-                
-            ctrl.send = function ( result, status ) {
-
-                expect( status ).to.equal( 200 );
-
-                expect( result ).to.be.an( 'array' ).and.have.length.above ( 0 );
-                expect( result [ 0 ] ).to.be.an( 'object' ).and.be.ok;
-                expect( result [ 0 ] ).to.contain.keys( 'id', 'action', 'description' );
-
-                expect( result [ 0 ] ).to.not.contain.keys( 'createdAt', 'updatedAt', 'deletedAt' );
-
-                done();                
-            };
-
-            ctrl.listAction();
-        });
+        done();
     });
+
+    function fakeRequest( req ) {
+        req.method  = req.method || 'GET';
+        req.url     = req.url || '/account/1/permissions';
+        req.query   = req.query || {};
+        req.body    = req.body || {};
+        req.params  = req.params || {};
+
+        return req;
+    }
+
+    function fakeResponse( cb ) {
+        return {
+            json: function( code, message ) {
+                setTimeout( function() {
+                    cb( code, JSON.parse( JSON.stringify( message ) ) )                    
+                }, 10 );
+            },
+
+            send: function( code, message ) {
+                setTimeout( function() {
+                    cb( code, message )
+                }, 10 );
+            }
+        };
+    }
+
+    it( 'should have loaded' );
+
+    describe( '.requiresPermission() middleware', function() {
+        it( 'should allow requests to continue when the user has permission.')
+        it( 'should not allow requests to continue when the user doesn\'t have permission.');
+
+        it( 'should work without any options' );
+        it( 'should work with the all option' );
+        it( 'should work with all option but overriding any specific action');
+        it( 'should allow you to use other middleware for any route option' );
+    });
+
 });

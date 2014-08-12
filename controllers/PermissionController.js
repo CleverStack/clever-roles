@@ -1,12 +1,18 @@
 var async   = require( 'async' )
   , _       = require( 'underscore' );
 
-module.exports = function ( Controller, PermissionService, RoleService, RoleModel ) {
+module.exports = function( Controller, PermissionService, RoleService, RoleModel ) {
     var PermissionController = Controller.extend(
     {  
         service: PermissionService,
 
-        route: '/account/:accountId/permission/:id/?|/account/:accountId/permission/:id/:action/?|/account/:accountId/permissions/?|/account/:accountId/permissions/:action/?',
+        route: [
+            '[POST] /account/:accountId/permission/?',
+            '/account/:accountId/permission/:id/?',
+            '/account/:accountId/permission/:id/:action/?',
+            '/account/:accountId/permissions/?',
+            '/account/:accountId/permissions/:action/?'
+        ],
 
         autoRouting: [
             function( req, res, next ) {
@@ -33,7 +39,7 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
             }
 
             return function( req, res, next ) {
-                var user    = req.session.passport.user
+                var user    = req.user
                   , method  = req.method.toLowerCase()
                   , id      = req.params.id
                   , action  = req.params.action || id;
@@ -46,7 +52,13 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
                 } else if ( /^[0-9a-fA-F]{24}$/.test( action ) || !isNaN( action ) ) {
                     action = 'get';
                 } else {
-                    action = !id ? 'list' : method;
+                    if ( req.params.action ) {
+                        action = req.params.action;
+                    } else if ( method === 'get' && !id ) {
+                        action = 'list';
+                    } else {
+                        action = method;
+                    }
                 }
                 
                 async.waterfall(
@@ -56,7 +68,12 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
                                 callback( null );
                             } else if ( !user.role || !user.role.permissions ) {
                                 RoleService
-                                    .getRoleWithPerms( user.RoleId )
+                                    .find({
+                                        where: {
+                                            id: user.RoleId
+                                        },
+                                        include: [ PermissionService.model ]
+                                    })
                                     .then( function( role ) {
                                         if ( role === null || !( role instanceof RoleModel ) ) {
                                             callback( 'Logged in user does not have a role with the "' + requiredPermission + '" permission.' );
@@ -74,7 +91,7 @@ module.exports = function ( Controller, PermissionService, RoleService, RoleMode
                         function determinePermissions( callback ) {
                             var actionName = ( !!action ? action : method ) + 'Action'
                               , permissions = [];
-
+                            
                             if ( typeof requiredPermissions[ actionName ] !== 'undefined' ) {
                                 if ( requiredPermissions[ actionName ] !== null ) {
                                     if ( requiredPermissions[ actionName ] instanceof Array ) {
