@@ -6,9 +6,6 @@ module.exports = require( 'classes' ).Module.extend({
                 if ( typeof options.include === 'undefined' ) {
                     options.include = [];
                 }
-                if ( options.include.indexOf( RoleModel ) === -1 ) {
-                    options.include.push( RoleModel );
-                }
                 if ( options.include.indexOf( AccountModel ) === -1 ) {
                     options.include.push( AccountModel );
                 }
