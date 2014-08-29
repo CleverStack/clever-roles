@@ -3,17 +3,19 @@
         "driver": "ORM",
         "account": {
             "enabled": true,
+            "requireConfirmation": false,
             "blockedEmailDomains": "@(gmail|mail|yahoo|aol|aim|hotmail|facebook|cox|verizon|icloud|apple|outlook|yandex|163|126|gmx)\\."
-        }
-    },
-
-    "clever-orm": {
+        },
         "modelAssociations": {
             "Account": {
                 "hasMany": [
                     "Role",
-                    "User",
                     "Permission"
+                ]
+            },
+            "User": {
+                "belongsTo": [
+                    "Role"
                 ]
             },
             "Role": {
@@ -30,14 +32,6 @@
                     "Account"
                 ],
                 "hasMany": [
-                    "Role"
-                ]
-            },
-            "User": {
-                "belongsTo": [
-                    "Account"
-                ],
-                "hasOne": [
                     "Role"
                 ]
             }
