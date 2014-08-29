@@ -1,491 +1,196 @@
 {
-    "AccountModel": [
-        {
-            "name": "Default Account",
-            "emailFwd": "test@cleverstack.io",
-            "subdomain" : "devi01s3.localhost:8080",
-            "active": true,
-            "associations": {
-                "RoleModel": [
-                    { "name": "Super Admin (Default Account)" },
-                    { "name": "Manager" },
-                    { "name": "General User" }
-                ],
-                "SubscriptionModel": {
-                    "name": "Trial Package for Default Account"
-                }
-            }
-        }
-    ],
     "RoleModel": [
         {
-            "name": "Super Admin (Default Account)",
-            "isSystemRole": true,
+            "AccountId":        null,
+            "systemRole":       true,
+            "name":             "Admin",
+            "description":      "Default (System) Administration Role, this gives any user (assigned this role) privileges to everything.",
             "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ],
                 "PermissionModel": [
-                    { "action": "Account.list" },
-                    { "action": "Account.view" },
-                    { "action": "Account.create" },
-                    { "action": "Account.edit" },
-                    { "action": "Account.delete" },
-                    { "action": "User.list" },
-                    { "action": "User.view" },
-                    { "action": "User.create" },
-                    { "action": "User.edit" },
-                    { "action": "User.delete" },
-                    { "action": "User.assignRole" },
-                    { "action": "Role.list" },
-                    { "action": "Role.view" },
-                    { "action": "Role.create" },
-                    { "action": "Role.edit" },
-                    { "action": "Role.delete" },
-                    { "action": "Permission.list" },
-                    { "action": "Permission.view" },
-                    { "action": "Permission.create" },
-                    { "action": "Permission.edit" },
-                    { "action": "Permission.delete" },
-                    { "action": "Permission.assignRole" }
-                ]
-            }
-        },
-        {
-            "name": "Manager",
-            "isSystemRole": true,
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ],
-                "PermissionModel": [
-                    { "action": "User.create" },
-                    { "action": "User.edit" },
-                    { "action": "User.list" },
-                    { "action": "User.view" },
-                    { "action": "User.delete" },
-                    { "action": "Role.list" },
-                    { "action": "Role.view" },
-                    { "action": "Role.create" },
-                    { "action": "Role.edit" },
-                    { "action": "Role.delete" },
-                    { "action": "Permission.create" },
-                    { "action": "Permission.edit" },
-                    { "action": "Permission.list" },
-                    { "action": "Permission.view" },
-                    { "action": "Permission.delete" }
-                ]
-            }
-        },
-        {
-            "name": "General User",
-            "isSystemRole": true,
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ],
-                "PermissionModel": [
-                    { "action": "User.view" }
+                    { "action": "Account.list",             "AccountId": null },
+                    { "action": "Account.view",             "AccountId": null },
+                    { "action": "Account.create",           "AccountId": null },
+                    { "action": "Account.edit",             "AccountId": null },
+                    { "action": "Account.delete",           "AccountId": null },
+                    { "action": "User.list",                "AccountId": null },
+                    { "action": "User.view",                "AccountId": null },
+                    { "action": "User.create",              "AccountId": null },
+                    { "action": "User.edit",                "AccountId": null },
+                    { "action": "User.delete",              "AccountId": null },
+                    { "action": "User.assignRole",          "AccountId": null },
+                    { "action": "Role.list",                "AccountId": null },
+                    { "action": "Role.view",                "AccountId": null },
+                    { "action": "Role.create",              "AccountId": null },
+                    { "action": "Role.edit",                "AccountId": null },
+                    { "action": "Role.delete",              "AccountId": null },
+                    { "action": "Permission.list",          "AccountId": null },
+                    { "action": "Permission.view",          "AccountId": null },
+                    { "action": "Permission.create",        "AccountId": null },
+                    { "action": "Permission.edit",          "AccountId": null },
+                    { "action": "Permission.delete",        "AccountId": null },
+                    { "action": "Permission.assignRole",    "AccountId": null },
+                    { "action": "Feedback.list",            "AccountId": null },
+                    { "action": "Feedback.view",            "AccountId": null },
+                    { "action": "Feedback.create",          "AccountId": null },
+                    { "action": "Feedback.edit",            "AccountId": null },
+                    { "action": "Feedback.delete",          "AccountId": null },
+                    { "action": "Feedback.assignRole",      "AccountId": null },
+                    { "action": "Campaign.list",            "AccountId": null },
+                    { "action": "Campaign.view",            "AccountId": null },
+                    { "action": "Campaign.create",          "AccountId": null },
+                    { "action": "Campaign.edit",            "AccountId": null },
+                    { "action": "Campaign.delete",          "AccountId": null },
+                    { "action": "Segment.list",             "AccountId": null },
+                    { "action": "Segment.view",             "AccountId": null },
+                    { "action": "Segment.create",           "AccountId": null },
+                    { "action": "Segment.edit",             "AccountId": null },
+                    { "action": "Segment.delete",           "AccountId": null },
+                    { "action": "Subscription.list",        "AccountId": null },
+                    { "action": "Subscription.view",        "AccountId": null },
+                    { "action": "Subscription.create",      "AccountId": null },
+                    { "action": "Subscription.edit",        "AccountId": null },
+                    { "action": "Subscription.delete",      "AccountId": null },
+                    { "action": "Page.list",                "AccountId": null },
+                    { "action": "Page.view",                "AccountId": null },
+                    { "action": "Page.create",              "AccountId": null },
+                    { "action": "Page.edit",                "AccountId": null },
+                    { "action": "Page.delete",              "AccountId": null }
                 ]
             }
         }
     ],
     "PermissionModel": [
         {
-            "action": "Account.list",
-            "description": "View accounts list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Account.list",
+            "description":      "Allows the user to view a list of their account/s."
         },
         {
-            "action": "Account.view",
-            "description": "View an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Account.view",
+            "description":      "Allows the user to view details about their account/s."
         },
         {
-            "action": "Account.create",
-            "description": "Create an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Account.create",
+            "description":      "Allows the user to create a new account/s."
         },
         {
-            "action": "Account.edit",
-            "description": "Edit an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Account.edit",
+            "description":      "Allows the user to update their account/s."
         },
         {
-            "action": "Account.delete",
-            "description": "Delete an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Account.delete",
+            "description":      "Allows the user to delete their account/s."
         },
         {
-            "action": "User.list",
-            "description": "View users list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.list",
+            "description":      "Allows the user to view a list of user/s within their account/s."
         },
         {
-            "action": "User.view",
-            "description": "View a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.view",
+            "description":      "Allows the user to view details about any user/s within their account/s."
         },
         {
-            "action": "User.create",
-            "description": "Create a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.create",
+            "description":      "Allows the user to create a new user for any of their account/s."
         },
         {
-            "action": "User.edit",
-            "description": "Edit a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.edit",
+            "description":      "Allows the user to update any user/s within their account/s."
         },
         {
-            "action": "User.delete",
-            "description": "Delete a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.delete",
+            "description":      "Allows the user to delete any user/s within their account/s."
         },
         {
-            "action": "User.assignRole",
-            "description": "Assign user/s to a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "User.assignRole",
+            "description":      "Allows the user to assign any user/s within their account to any role/s within their account/s."
         },
         {
-            "action": "Permission.list",
-            "description": "View permissions list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.list",
+            "description":      "Allows the user to view a list of permission/s within their account/s."
         },
         {
-            "action": "Permission.view",
-            "description": "View a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.view",
+            "description":      "Allows the user to view details about any permission/s within their account/s."
         },
         {
-            "action": "Permission.create",
-            "description": "Create a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.create",
+            "description":      "Allows the user to create a new permission for any of their account/s."
         },
         {
-            "action": "Permission.edit",
-            "description": "Edit a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.edit",
+            "description":      "Allows the user to update any permission/s within their account/s."
         },
         {
-            "action": "Permission.delete",
-            "description": "Delete a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.delete",
+            "description":      "Allows the user to delete any permission/s within their account/s."
         },
         {
-            "action": "Permission.assignRole",
-            "description": "Assign permission/s to a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Permission.assignRole",
+            "description":      "Allows the user to assign any permission/s within their account to any role/s within their account/s."
         },
         {
-            "action": "Role.list",
-            "description": "View roles list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Role.list",
+            "description":      "Allows the user to view a list of role/s within their account/s."
         },
         {
-            "action": "Role.view",
-            "description": "View a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Role.view",
+            "description":      "Allows the user to view details about any role/s within their account/s."
         },
         {
-            "action": "Role.create",
-            "description": "Create a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Role.create",
+            "description":      "Allows the user to create a new role for any of their account/s."
         },
         {
-            "action": "Role.edit",
-            "description": "Edit a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Role.edit",
+            "description":      "Allows the user to update any role/s within their account/s."
         },
         {
-            "action": "Role.delete",
-            "description": "Delete a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Default Account" }
-                ]
-            }
-        },
-        {
-            "action": "Account.list",
-            "description": "View accounts list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Account.view",
-            "description": "View an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Account.create",
-            "description": "Create an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Account.edit",
-            "description": "Edit an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Account.delete",
-            "description": "Delete an account.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.list",
-            "description": "View users list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.view",
-            "description": "View a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.create",
-            "description": "Create a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.edit",
-            "description": "Edit a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.delete",
-            "description": "Delete a user.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "User.assignRole",
-            "description": "Assign user/s to a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.list",
-            "description": "View permissions list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.view",
-            "description": "View a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.create",
-            "description": "Create a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.edit",
-            "description": "Edit a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.delete",
-            "description": "Delete a permission.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Permission.assignRole",
-            "description": "Assign permission/s to a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Role.list",
-            "description": "View roles list.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Role.view",
-            "description": "View a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Role.create",
-            "description": "Create a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Role.edit",
-            "description": "Edit a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
-        },
-        {
-            "action": "Role.delete",
-            "description": "Delete a role.",
-            "associations": {
-                "AccountModel": [
-                    { "name": "Testing Account" }
-                ]
-            }
+            "AccountId":        null,
+            "systemPermission": true,
+            "action":           "Role.delete",
+            "description":      "Allows the user to delete any role/s within their account/s."
         }
     ]
 }
