@@ -2,17 +2,21 @@ module.exports = function( Model ) {
     return Model.extend( 'Permission',
     {
         id: {
-            type: Number,
-            primaryKey: true,
-            autoIncrement: true
+            type:           Number,
+            primaryKey:     true,
+            autoIncrement:  true
         },
+        description:        String,
         action: {
-            type: String,
-            allowNull: false,
+            type:           String,
+            allowNull:      false,
             validate: {
-                len: [ 2, 50 ]
+                len:        [ 2, 50 ]
             }
         },
-        description: String
+        systemPermission: {
+            type:           Boolean,
+            default:        false
+        }
     });
 };

@@ -17,7 +17,7 @@ module.exports = function ( Model ) {
             type: String,
             allowNull: true
         },
-        isSystemRole: {
+        systemRole: {
             type: Boolean,
             default: false
         }
