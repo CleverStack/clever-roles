@@ -1,95 +1,99 @@
-module.exports = function( Promise, Service, RoleModel, PermissionModel, UserModel ) {
+module.exports = function( Promise, Service, RoleModel, PermissionService, UserService ) {
     return Service.extend({
 
         model: RoleModel,
 
-        create: function( data ) {
+        create: function( data, options ) {
             var service = this
               , create  = this._super;
 
+            options = options || {};
+            
             return new Promise( function( resolve, reject ) {
                 create.apply( service, [ {
                     name:        data.name,
                     description: data.description ? data.description : null,
                     AccountId:   data.AccountId ? data.AccountId : null
-                }])
+                }, options ])
                 .then( function( role ) {
-                    return service.handlePermissions( role, data.permissions );
+                    return service.handlePermissions( role, data.permissions, options );
                 })
                 .then( function( role ) {
-                    return service.handleUsers( role, data.users );
+                    return service.handleUsers( role, data.users, options );
                 })
                 .then( resolve )
                 .catch( reject );
             });
         },
 
-        update: function( idOrWhere, data ) {
+        update: function( idOrWhere, data, options ) {
             var service = this
               , update  = this._super;
+
+            options = options || {};
 
             return new Promise( function( resolve, reject ) {
                 update.apply( service, [ idOrWhere, {
                     name:        data.name,
                     description: data.description ? data.description : null,
                     AccountId:   data.AccountId ? data.AccountId : null
-                }])
+                }, options ])
                 .then( function( role ) {
-                    return service.handlePermissions( role, data.permissions );
+                    return service.handlePermissions( role, data.permissions, options );
                 })
                 .then( function( role ) {
-                    return service.handleUsers( role, data.users );
+                    return service.handleUsers( role, data.users, options );
                 })
                 .then( resolve )
                 .catch( reject );
             });
         },
 
-        handlePermissions: function( role, permIds ) {
+        handlePermissions: function( role, permIds, options ) {
             return new Promise( function( resolve, reject ) {
                 if ( !permIds || !permIds.length ) {
                     return resolve( role );
                 }
 
-                PermissionModel
-                .findAll({
-                    where: {
-                        id: {
-                            in: permIds
+                PermissionService
+                    .findAll({
+                        where: {
+                            id: {
+                                in: permIds
+                            }
                         }
-                    }
-                })
-                .then( function( permissions ) {
-                    role.setPermissions( permissions ).then( function() {
-                        resolve( role );
+                    }, options )
+                    .then( function( permissions ) {
+                        role.setPermissions( permissions, options ).then( function() {
+                            resolve( role );
+                        })
+                        .catch( reject );
                     })
                     .catch( reject );
-                })
-                .catch( reject );
             });
         },
 
-        handleUsers: function( role, userIds ) {
+        handleUsers: function( role, userIds, options ) {
             return new Promise( function( resolve, reject ) {
                 if ( !userIds || !userIds.length ) {
                     return resolve( role );
                 }
 
-                UserModel
-                .findAll({
-                    where: {
-                        id: {
-                            in: userIds
+                UserService
+                    .findAll({
+                        where: {
+                            id: {
+                                in: userIds
+                            }
                         }
-                    }
-                })
-                .then( function( users ) {
-                    role.setUsers( users ).then( function() {
-                        resolve( role );
+                    }, options )
+                    .then( function( users ) {
+                        role.setUsers( users, options ).then( function() {
+                            resolve( role );
+                        })
+                        .catch( reject );
                     })
                     .catch( reject );
-                })
-                .catch( reject );
             });
         },
 
