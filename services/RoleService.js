@@ -16,7 +16,7 @@ module.exports = function( Promise, Service, RoleModel, PermissionService, UserS
                     AccountId:   data.AccountId ? data.AccountId : null
                 }, options ])
                 .then( function( role ) {
-                    return service.handlePermissions( role, data.permissions, options );
+                    return service.handlePermissions( role, data.Permissions, options );
                 })
                 .then( function( role ) {
                     return service.handleUsers( role, data.users, options );
@@ -39,7 +39,7 @@ module.exports = function( Promise, Service, RoleModel, PermissionService, UserS
                     AccountId:   data.AccountId ? data.AccountId : null
                 }, options ])
                 .then( function( role ) {
-                    return service.handlePermissions( role, data.permissions, options );
+                    return service.handlePermissions( role, data.Permissions, options );
                 })
                 .then( function( role ) {
                     return service.handleUsers( role, data.users, options );
@@ -98,16 +98,13 @@ module.exports = function( Promise, Service, RoleModel, PermissionService, UserS
         },
 
         hasRole: function ( req, roles ) {
+            roles = Array.isArray ( roles ) ? roles : [roles];
 
-            roles = Array.isArray ( roles )
-                ? roles
-                : [roles];
-
-            var isAuthed = req.isAuthenticated () && !!req.user && !!req.user.role
+            var isAuthed = req.isAuthenticated () && !!req.user && !!req.user.Role
               , hasRole = false;
 
             roles.forEach ( function ( role ) {
-                if ( isAuthed && role === req.user.role.name ) {
+                if ( isAuthed && role === req.user.Role.name ) {
                     hasRole = true;
                 }
             } );

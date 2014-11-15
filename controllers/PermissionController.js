@@ -1,23 +1,39 @@
-var async   = require( 'async' )
-  , _       = require( 'underscore' );
+var injector = require( 'injector' );
 
-module.exports = function( Controller, PermissionService, RoleService, RoleModel ) {
+module.exports = function( async, _, Controller, PermissionService ) {
+    var AccountController = null;
+
     var PermissionController = Controller.extend(
     {  
         service: PermissionService,
 
         route: [
-            '[POST] /account/:accountId/permission/?',
-            '/account/:accountId/permission/:id/?',
-            '/account/:accountId/permission/:id/:action/?',
-            '/account/:accountId/permissions/?',
-            '/account/:accountId/permissions/:action/?'
+            '[POST] /account/:AccountId/permission/?',
+            '/account/:AccountId/permission/:id/?',
+            '/account/:AccountId/permission/:id/:action/?',
+            '/account/:AccountId/permissions/?',
+            '/account/:AccountId/permissions/:action/?'
         ],
 
         autoRouting: [
             function( req, res, next ) {
                 return PermissionController.requiresPermission({
                     all: 'Permission.$action'
+                })( req, res, next );
+            },
+
+            function( req, res, next ) {
+                if ( AccountController === null ) {
+                    AccountController = injector.getInstance( 'AccountController' );
+                }
+
+                AccountController.addAccountIdToRequest({
+                    all             : false,
+                    listAction      : true,
+                    getAction       : true,
+                    postAction      : true,
+                    putAction       : true,
+                    deleteAction    : true
                 })( req, res, next );
             }
         ],
@@ -60,33 +76,9 @@ module.exports = function( Controller, PermissionService, RoleService, RoleModel
                         action = method;
                     }
                 }
-                
+
                 async.waterfall(
                     [
-                        function lazyLoadRoles( callback ) {
-                            if ( !user ) {
-                                callback( null );
-                            } else if ( !user.role || !user.role.permissions ) {
-                                RoleService
-                                    .find({
-                                        where: {
-                                            id: user.RoleId
-                                        },
-                                        include: [ PermissionService.model ]
-                                    })
-                                    .then( function( role ) {
-                                        if ( role === null || !( role instanceof RoleModel ) ) {
-                                            callback( 'Logged in user does not have a role with the "' + requiredPermission + '" permission.' );
-                                        } else {
-                                            user.role = JSON.parse(JSON.stringify(role));
-                                            callback( null );
-                                        }
-                                    })
-                                    .catch( callback );
-                            } else {
-                                callback( null );
-                            }
-                        },
 
                         function determinePermissions( callback ) {
                             var actionName = ( !!action ? action : method ) + 'Action'
@@ -117,7 +109,7 @@ module.exports = function( Controller, PermissionService, RoleService, RoleModel
                             }
 
                             permissions.every( function( requiredPermission ) {
-                                if ( /^([^\.]+)\.\$action/.test( requiredPermission ) ) {
+                                if ( /^([^\$]+)\.\$action/.test( requiredPermission ) ) {
                                     requiredPermission = RegExp.$1 + '.';
 
                                     switch( action ) {
@@ -136,7 +128,7 @@ module.exports = function( Controller, PermissionService, RoleService, RoleModel
                                         break;
                                     }
                                 }
-                                if ( requiredPermission !== 'requiresLogin' && _.findWhere( [].slice.call( user.role.permissions ), { action: requiredPermission } ) === undefined ) {
+                                if ( requiredPermission !== 'requiresLogin' && _.findWhere( [].slice.call( user.Role.Permissions ), { action: requiredPermission } ) === undefined ) {
                                     callback( 'Logged in user does not have ' + requiredPermission + ' permission.' );
                                     hasPermission = false;
                                     return false;
@@ -163,42 +155,7 @@ module.exports = function( Controller, PermissionService, RoleService, RoleModel
         }
     },
     {
-        listAction: function() {
-            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
-                return this.send( 200, [] );
-            }
-            this.req.query.AccountId = this.req.user.account.id;
-            this._super.apply( this, arguments );
-        },
-
-        getAction: function() {
-            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
-                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
-            }
-            this.req.query.AccountId = this.req.user.account.id;
-            this._super.apply( this, arguments );
-        },
-
-        postAction: function() {
-            this.req.body.AccountId = this.req.user.account.id;
-            this._super.apply( this, arguments );
-        },
-
-        putAction: function() {
-            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
-                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
-            }
-            this.req.query.AccountId = this.req.user.account.id;
-            this._super.apply( this, arguments );
-        },
-
-        deleteAction: function() {
-            if ( this.req.query.AccountId !== undefined && this.req.query.AccountId != this.req.user.account.id ) {
-                return this.handleServiceMessage({ statuscode: 400, message: this.Class.service.model._name + " doesn't exist." })
-            }
-            this.req.query.AccountId = this.req.user.account.id;
-            this._super.apply( this, arguments );
-        }
+        
     });
 
     return PermissionController;

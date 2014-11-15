@@ -17,6 +17,14 @@ module.exports = function( Model ) {
         systemPermission: {
             type:           Boolean,
             default:        false
+        },
+        toJSON: function() {
+            var json = this._super.apply( this, arguments );
+
+            delete json.createdAt;
+            delete json.updatedAt;
+            
+            return json;
         }
     });
 };

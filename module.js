@@ -1,28 +1,30 @@
 module.exports = require( 'classes' ).Module.extend({
-    preRoute: function() {
-        require( 'injector' ).inject( function( AccountModel, UserModel, RoleModel, PermissionModel ) {
-            UserModel.on( 'preQuery', function( options ) {
-                UserModel.debug( 'UserModel:preQuery(include:[])' );
-                if ( typeof options.include === 'undefined' ) {
-                    options.include = [];
-                }
-                if ( options.include.indexOf( AccountModel ) === -1 ) {
-                    options.include.push( AccountModel );
-                }
-            });
+    preRoute: function( AccountModel, RoleModel, PermissionModel, UserModel ) {
+        // Include the users role and it's permissions
+        UserModel.on( 'preQuery', function( options ) {
+            options.include = typeof options.include !== 'undefined' ? options.include : [];
+            if ( options.include.indexOf( { model: RoleModel._model } ) === -1 ) {
+                options.include.push( { model: RoleModel._model, include: [ PermissionModel._model ] } );
+            }
+        });
 
-            AccountModel.on( 'preQuery', function( options ) {
-                AccountModel.debug( 'AccountModel:preQuery(include:[])' );
-                if ( typeof options.include === 'undefined' ) {
-                    options.include = [];
-                }
-                if ( options.include.indexOf( RoleModel ) === -1 ) {
-                    options.include.push( RoleModel );
-                }
-                if ( options.include.indexOf( PermissionModel ) === -1 ) {
-                    options.include.push( PermissionModel );
-                }
-            });
+        // Include the accounts roles and permissions
+        AccountModel.on( 'preQuery', function( options ) {
+            options.include = typeof options.include !== 'undefined' ? options.include : [];
+            if ( options.include.indexOf( { model: RoleModel._model } ) === -1 ) {
+                options.include.push( { model: RoleModel._model } );
+            }
+            if ( options.include.indexOf( { model: PermissionModel._model } ) === -1 ) {
+                options.include.push( { model: PermissionModel._model } );
+            }
+        });
+
+        // Include the roles permissions
+        RoleModel.on( 'preQuery', function( options ) {
+            options.include = typeof options.include !== 'undefined' ? options.include : [];
+            if ( options.include.indexOf( { model: PermissionModel._model } ) === -1 ) {
+                options.include.push( { model: PermissionModel._model } );
+            }
         });
     }
 });

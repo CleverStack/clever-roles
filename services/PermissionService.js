@@ -16,7 +16,7 @@ module.exports = function( Promise, Service, PermissionModel, RoleModel ) {
                     AccountId:   data.AccountId     ? data.AccountId : null
                 }, options ])
                 .then( function( permission ) {
-                    return service.handleRoles( permission, data.roles, options );
+                    return service.handleRoles( permission, data.Roles, options );
                 })
                 .then( resolve )
                 .catch( reject );
@@ -36,7 +36,7 @@ module.exports = function( Promise, Service, PermissionModel, RoleModel ) {
                     AccountId:   data.AccountId     ? data.AccountId : null
                 }])
                 .then( function( permission ) {
-                    return service.handleRoles( permission, data.roles, options );
+                    return service.handleRoles( permission, data.Roles, options );
                 })
                 .then( resolve )
                 .catch( reject );
