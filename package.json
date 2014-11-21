@@ -1,7 +1,7 @@
 {
     "name":         "clever-roles",
     "description":  "Adds permissions and roles to users with CleverStack",
-    "version":      "1.1.0",
+    "version":      "1.1.1",
     "main":         "module.js",
     "author": {
         "name":     "CleverStack",
@@ -31,11 +31,10 @@
     ],
     "license":      "BSD-2-Clause",
     "dependencies": {
-        "lodash":       "~2.4.1"
+        
     },
     "devDependencies": {
-        "grunt":        "~0.4.2",
-        "grunt-prompt": "~1.1.0"
+        
     },
     "bundledDependencies": [
         "clever-auth"
