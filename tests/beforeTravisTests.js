@@ -232,6 +232,6 @@ createProject ( 1 )
     .then ( installAuth )
     .then ( copyModule )
     .then ( bundled )
-    .fail ( function ( err ) {
+    .catch ( function ( err ) {
         console.log ( err );
     } );
