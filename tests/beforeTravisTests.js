@@ -82,29 +82,44 @@ function installORM ( step ) {
 
 //install clever-auth module to test project
 function installAuth ( step ) {
-    var defered = Q.defer ()
-      , proc = spawn ( 'clever', [ 'install', 'clever-auth' ], { cwd: path.join ( __dirname, '../', prName ) } );
+    return new Promise( function( resolve, reject ) {
+        var objs = [
+                { reg: /Default Username\: \(default\)/, write: '\n', done: false },
+                { reg: /Overwrite existing user with the same username\? \(Y\/n\)/, write: '\n', done: false },
+                { reg: /Default Users Password\: \(clever\)/, write: '\n', done: false },
+                { reg: /Default Users Email\: \(default@cleverstack.io\)/, write: '\n', done: false },
+                { reg: /Default Users Firstname\: \(Clever\)/, write: '\n', done: false },
+                { reg: /Default Users Lastname\: \(User\)/, write: '\n', done: false },
+                { reg: /Default Users Phone Number\:/, write: '\n', done: false },
+                { reg: /Default User has admin rights\: \(Y\/n\)/, write: '\n', done: false },
+                { reg: /Default User has confirmed their email\: \(Y\/n\)/, write: '\n', done: false },
+                { reg: /Default User has an active account\: \(Y\/n\)/, write: '\n', done: false }
+            ]
+          , proc = spawn ( 'clever', [ 'install', 'clever-auth'], { cwd: path.join( __dirname, '../', prName ) } );
 
-    console.log ( 'step #' + step + ' - install clever-auth module - start\n' );
+        console.log( 'step #7 - grunt prompt:cleverAuthSeed clever-auth module - begin\n' );
 
-    proc.stdout.on ( 'data', function ( data ) {
-        var str = data.toString ();
+        proc.stdout.on('data', function( data ) {
+            var str = data.toString();
 
-        if ( str.match ( 'ing' ) !== null ) {
-            console.log ( str );
-        }
-    } );
+            objs.forEach ( function( obj, i ) {
+                if ( obj.done !== true && str.match( obj.reg ) !== null ) {
+                    objs[ i ].done = true;
+                    proc.stdin.write( obj.write );
+                } 
+            });
+        });
 
-    proc.stderr.on ( 'data', function ( data ) {
-        defered.reject ( data.toString ( 'Error in step #' + step + ' - ' + data.toString () + '\n' ) );
-    } );
+        proc.stderr.on('data', function( data ) {
+            console.log( 'Error in step #7 - ' + data.toString() + '\n');
+            reject ( data.toString() );
+        });
 
-    proc.on ( 'close', function ( code ) {
-        console.log ( 'step #' + step + ' - process exited with code ' + code + '\n' );
-        defered.resolve ( ++step );
-    } );
-
-    return defered.promise;
+        proc.on('close', function( code ) {
+            console.log( 'step #7 process exited with code ' + code + '\n' );
+            resolve();
+        });
+    });
 }
 
 //copy clever-roles module in test project
