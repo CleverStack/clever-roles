@@ -1,87 +1,80 @@
-var Q = require ( 'q' )
-  , spawn = require ( 'child_process' ).spawn
-  , path = require ( 'path' )
-  , fs = require ( 'fs' )
-  , ncp = require ( 'ncp' ).ncp
-  , mName = 'clever-roles'
-  , prName = 'testProject';
+var Promise     = require( 'bluebird' )
+  , spawn       = require ( 'child_process' ).spawn
+  , path        = require ( 'path' )
+  , fs          = require ( 'fs' )
+  , ncp         = require ( 'ncp' ).ncp
+  , mName       = 'clever-roles'
+  , prName      = 'testProject';
 
 //create test project
 function createProject ( step ) {
-    var defered = Q.defer ()
-      , proc = spawn ( 'clever', [ 'init', '--allow-root', '--skip-protractor', prName ] );
+    return new Promise( function( resolve, reject ) {
+        var proc = spawn ( 'clever', [ 'init', '--allow-root', '--skip-protractor', prName ] );
 
-    console.log ( 'step #' + step + ' - create test project - start\n' );
+        console.log ( 'step #' + step + ' - create test project - start\n' );
 
-    proc.stdout.on ( 'data', function ( data ) {
-        var str = data.toString ();
+        proc.stdout.on ( 'data', function( data ) {
+            var str = data.toString ();
 
-        if ( str.match ( 'ing' ) !== null ) {
-            console.log ( str )
-        }
-    } );
+            if ( str.match( 'ing' ) !== null ) {
+                console.log ( str )
+            }
+        });
 
-    proc.stderr.on ( 'data', function ( data ) {
-        defered.reject ( 'Error in step #' + step + ' - ' + data.toString () + '\n' );
-    } );
+        proc.stderr.on ( 'data', function( data ) {
+            reject ( 'Error in step #' + step + ' - ' + data.toString () + '\n' );
+        });
 
-    proc.on ( 'close', function ( code ) {
-        console.log ( 'step #' + step + ' - process exited with code ' + code + '\n' );
-        defered.resolve ( ++step );
-    } );
-
-    return defered.promise;
+        proc.on ( 'close', function( code ) {
+            console.log ( 'step #' + step + ' - process exited with code ' + code + '\n' );
+            resolve ( ++step );
+        });
+    });
 }
 
-//install clever-orm module to test project
-function installORM ( step ) {
-    var defered = Q.defer ()
-      , objs = [
-            { reg: 'Database username', write: 'travis\n' },
-            { reg: 'Database password', write: '\n' },
-            { reg: 'Database name', write: 'test_db\n' },
-            { reg: 'Database dialect', write: '\n' },
-            { reg: 'Database port', write: '3306\n' },
-            { reg: 'Database host', write: '127.0.0.1\n' }
-        ]
-      , proc = spawn ( 'clever', [ 'install', 'clever-orm' ], { cwd: path.join ( __dirname, '../', prName ) } );
+function installORM() {
+    return new Promise( function( resolve, reject ) {
+        var objs = [
+                { reg: /Database username/ , write: 'travis\n'   , done: false },
+                { reg: /Database password/ , write: '\n'         , done: false },
+                { reg: /Database name/     , write: 'test_db\n'  , done: false },
+                { reg: /Database dialect/  , write: '\n'         , done: false },
+                { reg: /Database port/     , write: '3306\n'     , done: false },
+                { reg: /Database host/     , write: '127.0.0.1\n', done: false },
+            ]
+          , proc = spawn ( 'clever', [ 'install', 'clever-orm' ], { cwd: path.join( __dirname, '../', prName ) } );
 
-    console.log ( 'step #' + step + ' - install clever-orm module - start\n' );
+        console.log( 'step #2 - install clever-orm module - begin\n' );
 
-    proc.stdout.on ( 'data', function ( data ) {
-        var str = data.toString ()
-          , index = -1;
+        proc.stdout.on('data', function (data) {
+            var str = data.toString();
 
-        if ( str.match ( 'ing' ) !== null ) {
-            console.log ( str );
-        }
+            if ( str.match( /ing/ ) !== null ) {
+                console.log( str )
+            } 
 
-        objs.forEach ( function ( obj, i ) {
-            if ( str.match ( obj.reg ) !== null ) {
-                proc.stdin.write ( obj.write );
-                index = i;
-            }
-        } );
+            objs.forEach ( function ( obj, i ) {
+                if ( obj.done !== true && str.match( obj.reg ) !== null ) {
+                    objs[i].done = true;
+                    proc.stdin.write( obj.write );
+                } 
+            });
+        });
 
-        if ( index !== -1 ) {
-            objs.splice ( index, 1 );
-        }
-    } );
+        proc.stderr.on('data', function (data) {
+            console.log( 'Error in step #2 - ' + data.toString() + '\n');
+            reject ( data.toString() );
+        });
 
-    proc.stderr.on ( 'data', function ( data ) {
-        defered.reject ( data.toString ( 'Error in step #' + step + ' - ' + data.toString () + '\n' ) );
-    } );
-
-    proc.on ( 'close', function ( code ) {
-        console.log ( 'step #' + step + ' - process exited with code ' + code + '\n' );
-        defered.resolve ( ++step );
-    } );
-
-    return defered.promise;
+        proc.on('close', function (code) {
+            console.log('step #2 process exited with code ' + code + '\n' );
+            resolve();
+        });
+    });
 }
 
 //install clever-auth module to test project
-function installAuth ( step ) {
+function installAuth( step ) {
     return new Promise( function( resolve, reject ) {
         var objs = [
                 { reg: /Default Username\: \(default\)/, write: '\n', done: false },
@@ -97,7 +90,7 @@ function installAuth ( step ) {
             ]
           , proc = spawn ( 'clever', [ 'install', 'clever-auth'], { cwd: path.join( __dirname, '../', prName ) } );
 
-        console.log( 'step #7 - grunt prompt:cleverAuthSeed clever-auth module - begin\n' );
+        console.log( 'step #' + step + ' - grunt prompt:cleverAuthSeed clever-auth module - begin\n' );
 
         proc.stdout.on('data', function( data ) {
             var str = data.toString();
@@ -124,127 +117,113 @@ function installAuth ( step ) {
 
 //copy clever-roles module in test project
 function copyModule ( step ) {
-    var defered = Q.defer ()
-      , fromDir = path.join ( __dirname, '../' )
-      , toDir = path.join ( __dirname, '../', prName, 'backend', 'modules', mName )
-      , options = {
-            filter: function ( file ) {
-                return file.match ( prName ) === null
+    return new Promise( function( resolve, reject ) {
+        var fromDir     = path.join( __dirname, '../' )
+          , toDir       = path.join( __dirname, '../', prName, 'backend', 'modules', mName )
+          , options     = {
+                filter: function( file ) {
+                    return file.match ( prName ) === null
+                }
+            };
+
+        console.log( 'step #' + step + ' - copy ' + mName + ' modyle in test project - start\n' );
+
+        ncp( fromDir, toDir, options, function( err ) {
+            if ( err ) {
+                return reject( 'Error in step #' + step + ' - ' + err + '\n' );
             }
-        };
 
-    console.log ( 'step #' + step + ' - copy ' + mName + ' modyle in test project - start\n' );
-
-    ncp ( fromDir, toDir, options, function ( err ) {
-        if ( err ) {
-            return defered.reject ( 'Error in step #' + step + ' - ' + err + '\n' );
-        }
-
-        console.log ( 'step #' + step + ' - process exited with code 0\n' );
-        defered.resolve ( ++step );
-    } );
-
-    return defered.promise;
+            console.log( 'step #' + step + ' - process exited with code 0\n' );
+            resolve( ++step );
+        });
+    });
 }
 
 //create and update config files
 function configFiles ( step ) {
-    var deferred = Q.defer ()
-      , ormFile = path.join ( __dirname, '../', prName, 'backend', 'modules', 'clever-orm', 'config', 'default.json' )
-      , comFile = path.join ( __dirname, '../', prName, 'backend', 'config', 'test.json' )
-      , ormData = {
-            "clever-orm": {
-                "db": {
-                    "username": "travis",
-                    "password": "",
-                    "database": "test_db",
-                    "options": {
-                        "host": "127.0.0.1",
-                        "dialect": "mysql",
-                        "port": 3306
-                    }
-                },
-                "modelAssociations": {
-                    "UserModel": {
-                        "belongsTo": [ "RoleModel" ]
+    return new Promise( function( resolve, reject ) {
+        var ormFile = path.join ( __dirname, '../', prName, 'backend', 'modules', 'clever-orm', 'config', 'default.json' )
+          , comFile = path.join ( __dirname, '../', prName, 'backend', 'config', 'test.json' )
+          , ormData = {
+                "clever-orm": {
+                    "db": {
+                        "username": "travis",
+                        "password": "",
+                        "database": "test_db",
+                        "options": {
+                            "host": "127.0.0.1",
+                            "dialect": "mysql",
+                            "port": 3306
+                        }
                     },
-                    "RoleModel": {
-                        "hasMany": [  "PermissionModel" ],
-                        "belongsTo": [ "UserModel" ]
-                    },
-                    "PermissionModel": {
-                        "hasMany": [ "RoleModel" ]
-                    }
+                    "modelAssociations": {}
                 }
             }
-        }
-      , comData = {
-            "environmentName": "TEST",
-            "memcacheHost": "127.0.0.1:11211",
-            "clever-orm": {
-                "db": {
-                    "username": "travis",
-                    "password": "",
-                    "database": "test_db",
-                    "options": {
-                        "dialect": "mysql",
-                        "host": "127.0.0.1",
-                        "port": "3306"
+          , comData = {
+                "environmentName": "TEST",
+                "memcacheHost": "127.0.0.1:11211",
+                "clever-orm": {
+                    "db": {
+                        "username": "travis",
+                        "password": "",
+                        "database": "test_db",
+                        "options": {
+                            "dialect": "mysql",
+                            "host": "127.0.0.1",
+                            "port": "3306"
+                        }
                     }
                 }
-            }
-        };
+            };
 
-    console.log ( 'step #' + step + ' - create and update config files - start\n' );
+        console.log( 'step #' + step + ' - create and update config files - start\n' );
 
-    fs.writeFile ( ormFile, JSON.stringify ( ormData ), function ( err ) {
-
-        if ( err ) {
-            return deferred.reject ( 'Error in step #' + step + ' - ' + err + '\n' );
-        }
-
-        fs.writeFile ( comFile, JSON.stringify ( comData ), function ( err ) {
+        fs.writeFile( ormFile, JSON.stringify( ormData ), function( err ) {
 
             if ( err ) {
-                return deferred.reject ( 'Error in step #' + step + ' - ' + err + '\n' );
+                return reject ( 'Error in step #' + step + ' - ' + err + '\n' );
             }
 
-            console.log ( 'step #' + step + ' - process exited with code 0\n' );
-            deferred.resolve ( ++step );
-        } );
-    } );
+            fs.writeFile( comFile, JSON.stringify ( comData ), function ( err ) {
 
-    return deferred.promise;
+                if ( err ) {
+                    return reject( 'Error in step #' + step + ' - ' + err + '\n' );
+                }
+
+                console.log( 'step #' + step + ' - process exited with code 0\n' );
+                resolve( ++step );
+            });
+        });
+    });
 }
 
 //added clever-roles module in bundledDependencies
 function bundled ( step ) {
-    var deferred = Q.defer ()
-      , file = path.join ( __dirname, '../', prName, 'backend', 'package.json' );
+    return new Promise( function( resolve, reject ) {
+        var file = path.join ( __dirname, '../', prName, 'backend', 'package.json' );
 
-    console.log ( 'step #' + step + ' - added ' + mName + ' module in bundledDependencies\n' );
+        console.log( 'step #' + step + ' - added ' + mName + ' module in bundledDependencies\n' );
 
-    fs.readFile ( file, function ( err, data ) {
-
-        if ( err ) {
-            return deferred.reject ( 'Error in step #' + step + ' - ' + err + '\n' );
-        }
-
-        data = JSON.parse ( data );
-        data.bundledDependencies.push ( mName );
-
-        fs.writeFile ( file, JSON.stringify ( data ), function ( err ) {
+        fs.readFile( file, function( err, data ) {
 
             if ( err ) {
-                return deferred.reject ( 'Error in step #' + step + ' - ' + err + '\n' );
+                return reject( 'Error in step #' + step + ' - ' + err + '\n' );
             }
 
-            console.log ( 'step #' + step + ' - process exited with code 0\n' );
-            deferred.resolve ( ++step );
-        } );
-    } );
+            data = JSON.parse( data );
+            data.bundledDependencies.push( mName );
 
-    return deferred.promise;
+            fs.writeFile( file, JSON.stringify( data ), function( err ) {
+
+                if ( err ) {
+                    return reject( 'Error in step #' + step + ' - ' + err + '\n' );
+                }
+
+                console.log( 'step #' + step + ' - process exited with code 0\n' );
+                resolve( ++step );
+            });
+        });
+    });
 }
 
 createProject ( 1 )
