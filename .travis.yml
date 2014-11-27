@@ -12,9 +12,9 @@ before_install:
 
 before_script:
   - mysql -e 'create database test_db;'
-  - export NODE_ENV=test && export NODE_PATH=./lib/:./modules/
+  - export NODE_ENV=TEST && export NODE_PATH=./lib/:./modules/
   - node tests/beforeTravisTests.js
-  - cd testProject/backend
+  - cd tests/assets/testProject
 
 services:
   - mysql

@@ -29,7 +29,7 @@ function createProject( step ) {
 
         proc.on( 'close', function( code ) {
             console.log( 'step #' + step + ' process exited with code ' + code + '\n' );
-            resolve( step++ );
+            resolve( ++step );
         });
     });
 }
@@ -70,7 +70,7 @@ function installORM( step ) {
 
         proc.on('close', function( code ) {
             console.log( 'step #' + step + ' process exited with code ' + code + '\n' );
-            resolve( step++ );
+            resolve( ++step );
         });
     });
 }
@@ -100,7 +100,7 @@ function installAuth( step ) {
             ]
           , proc = spawn ( 'clever', [ 'install', 'clever-auth'], { cwd: prRoot } );
 
-        console.log( 'step #' + step + ' - grunt prompt:cleverAuthSeed clever-auth module - begin\n' );
+        console.log( 'step #' + step + ' - clever install clever-auth - begin\n' );
 
         proc.stdout.on('data', function( data ) {
             var str = data.toString();
@@ -120,7 +120,7 @@ function installAuth( step ) {
 
         proc.on('close', function( code ) {
             console.log( 'step #' + step + ' process exited with code ' + code + '\n' );
-            resolve( step++ );
+            resolve( ++step );
         });
     });
 }
