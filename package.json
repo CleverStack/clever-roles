@@ -37,6 +37,7 @@
         
     },
     "bundledDependencies": [
-        "clever-auth"
+        "clever-auth",
+        "clever-accounts"
     ]
 }

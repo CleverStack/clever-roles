@@ -128,6 +128,7 @@ module.exports = function( async, _, Controller, PermissionService ) {
                                         break;
                                     }
                                 }
+
                                 if ( requiredPermission !== 'requiresLogin' && _.findWhere( [].slice.call( user.Role.Permissions ), { action: requiredPermission } ) === undefined ) {
                                     callback( 'Logged in user does not have ' + requiredPermission + ' permission.' );
                                     hasPermission = false;
