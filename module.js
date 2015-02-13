@@ -1,41 +1,74 @@
-module.exports = require( 'classes' ).Module.extend({
-    preRoute: function( AccountModel, RoleModel, PermissionModel, UserModel ) {
-        // Include the users role and it's permissions
-        UserModel.on( 'preQuery', function( options ) {
-            options.include = typeof options.include !== 'undefined' ? options.include : [];
-            if ( options.include.indexOf( { model: RoleModel._model } ) === -1 ) {
-                options.include.push( { model: RoleModel._model, include: [ PermissionModel._model ] } );
+module.exports = require('classes').Module.extend({
+    preRoute: function(AccountModel, RoleModel, PermissionModel, UserModel, _) {
+        UserModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
+            findOptions.include = findOptions.include || [];
+
+            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+                findOptions.include.push({
+                    model : RoleModel._model,
+                    include : [{
+                        model : PermissionModel._model
+                    }]
+                });
             }
+
+            if (!_.findWhere(findOptions.include, { model: AccountModel._model })) {
+                findOptions.include.push({
+                    model : AccountModel._model
+                });
+            }
+
+            callback(null);
         });
 
         // Include the accounts roles and permissions
-        AccountModel.on( 'preQuery', function( options ) {
-            options.include = typeof options.include !== 'undefined' ? options.include : [];
-            if ( options.include.indexOf( { model: RoleModel._model } ) === -1 ) {
-                options.include.push( { model: RoleModel._model } );
+        AccountModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
+            findOptions.include = findOptions.include || [];
+
+            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+                findOptions.include.push({
+                    model : RoleModel._model
+                });
             }
-            if ( options.include.indexOf( { model: PermissionModel._model } ) === -1 ) {
-                options.include.push( { model: PermissionModel._model } );
+
+            if (!_.findWhere(findOptions.include, { model: PermissionModel._model })) {
+                findOptions.include.push({
+                    model : PermissionModel._model
+                });
             }
+
+            callback(null);
         });
 
         // Include the roles permissions
-        RoleModel.on( 'preQuery', function( options ) {
-            options.include = typeof options.include !== 'undefined' ? options.include : [];
-            if ( options.include.indexOf( { model: PermissionModel._model } ) === -1 ) {
-                options.include.push( { model: PermissionModel._model } );
+        RoleModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
+            findOptions.include = findOptions.include || [];
+
+            if (!_.findWhere(findOptions.include, { model: PermissionModel._model })) {
+                findOptions.include.push({
+                    model : PermissionModel._model
+                });
             }
 
-            if ( options.include.indexOf( { model: UserModel._model } ) === -1 ) {
-                options.include.push( { model: UserModel._model } );
+            if (!_.findWhere(findOptions.include, { model: UserModel._model })) {
+                findOptions.include.push({
+                    model : UserModel._model
+                });
             }
+
+            callback(null);
         });
 
-        PermissionModel.on( 'preQuery', function( options ) {
-            options.include = typeof options.include !== 'undefined' ? options.include : [];
-            if ( options.include.indexOf( { model: RoleModel._model } ) === -1 ) {
-                options.include.push( { model: RoleModel._model } );
+        PermissionModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
+            findOptions.include = findOptions.include || [];
+
+            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+                findOptions.include.push({
+                    model : RoleModel._model
+                });
             }
+
+            callback(null);
         });
     }
 });
