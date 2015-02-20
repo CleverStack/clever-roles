@@ -3,18 +3,18 @@ module.exports = require('classes').Module.extend({
         UserModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
             findOptions.include = findOptions.include || [];
 
-            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: RoleModel.entity })) {
                 findOptions.include.push({
-                    model : RoleModel._model,
+                    model : RoleModel.entity,
                     include : [{
-                        model : PermissionModel._model
+                        model : PermissionModel.entity
                     }]
                 });
             }
 
-            if (!_.findWhere(findOptions.include, { model: AccountModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: AccountModel.entity })) {
                 findOptions.include.push({
-                    model : AccountModel._model
+                    model : AccountModel.entity
                 });
             }
 
@@ -25,15 +25,15 @@ module.exports = require('classes').Module.extend({
         AccountModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
             findOptions.include = findOptions.include || [];
 
-            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: RoleModel.entity })) {
                 findOptions.include.push({
-                    model : RoleModel._model
+                    model : RoleModel.entity
                 });
             }
 
-            if (!_.findWhere(findOptions.include, { model: PermissionModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: PermissionModel.entity })) {
                 findOptions.include.push({
-                    model : PermissionModel._model
+                    model : PermissionModel.entity
                 });
             }
 
@@ -44,15 +44,15 @@ module.exports = require('classes').Module.extend({
         RoleModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
             findOptions.include = findOptions.include || [];
 
-            if (!_.findWhere(findOptions.include, { model: PermissionModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: PermissionModel.entity })) {
                 findOptions.include.push({
-                    model : PermissionModel._model
+                    model : PermissionModel.entity
                 });
             }
 
-            if (!_.findWhere(findOptions.include, { model: UserModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: UserModel.entity })) {
                 findOptions.include.push({
-                    model : UserModel._model
+                    model : UserModel.entity
                 });
             }
 
@@ -62,9 +62,9 @@ module.exports = require('classes').Module.extend({
         PermissionModel.on('beforeAllFindersOptions', function(findOptions, queryOptions, callback) {
             findOptions.include = findOptions.include || [];
 
-            if (!_.findWhere(findOptions.include, { model: RoleModel._model })) {
+            if (!_.findWhere(findOptions.include, { model: RoleModel.entity })) {
                 findOptions.include.push({
-                    model : RoleModel._model
+                    model : RoleModel.entity
                 });
             }
 
