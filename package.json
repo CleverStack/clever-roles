@@ -1,39 +1,33 @@
 {
-    "name":         "clever-roles",
-    "description":  "Adds permissions and roles to users with CleverStack",
-    "version":      "1.2.1",
-    "main":         "module.js",
-    "author": {
-        "name":     "CleverStack",
-        "email":    "admin@cleverstack.io",
-        "web":      "http://cleverstack.io"
-    },
-    "collaborators": [
-        "Richard Gustin <richard.gustin86@gmail.com>"
-    ],
-    "repository": {
-        "type":     "git",
-        "url":      "git://github.com/CleverStack/clever-roles.git"
-    },
-    "bugs": {
-        "url":      "https://github.com/CleverStack/clever-roles/issues"
-    },
-    "keywords": [
-        "cleverstack",
-        "cleverstack-module",
-        "cleverstack-modules",
-        "cleverstack-backend",
-        "roles",
-        "role based authentication",
-        "role based access control",
-        "rbac",
-        "authentication"
-    ],
-    "license":      "BSD-2-Clause",
-    "dependencies": {
-        
-    },
-    "devDependencies": {
-        
-    }
+  "name":         "clever-roles",
+  "description":  "Adds permissions and roles to users with CleverStack",
+  "version":      "1.2.1",
+  "main":         "module.js",
+  "author": {
+    "name":     "CleverStack",
+    "email":    "admin@cleverstack.io",
+    "web":      "http://cleverstack.io"
+  },
+  "collaborators": [
+    "Richard Gustin <richard.gustin86@gmail.com>"
+  ],
+  "repository": {
+    "type":     "git",
+    "url":      "git://github.com/CleverStack/clever-roles.git"
+  },
+  "bugs": {
+    "url":      "https://github.com/CleverStack/clever-roles/issues"
+  },
+  "keywords": [
+    "cleverstack",
+    "cleverstack-module",
+    "cleverstack-modules",
+    "cleverstack-backend",
+    "roles",
+    "role based authentication",
+    "role based access control",
+    "rbac",
+    "authentication"
+  ],
+  "license":      "BSD-2-Clause"
 }

@@ -1,40 +1,40 @@
 {
-    "clever-roles": {
-        "driver": "ORM",
-        "account": {
-            "enabled": true,
-            "requireConfirmation": false,
-            "blockedEmailDomains": "@(gmail|mail|yahoo|aol|aim|hotmail|facebook|cox|verizon|icloud|apple|outlook|yandex|163|126|gmx)\\."
-        },
-        "modelAssociations": {
-            "Account": {
-                "hasMany": [
-                    "Role",
-                    "Permission"
-                ]
-            },
-            "User": {
-                "belongsTo": [
-                    "Role"
-                ]
-            },
-            "Role": {
-                "belongsTo": [
-                    "Account"
-                ],
-                "hasMany": [
-                    "Permission",
-                    "User"
-                ]
-            },
-            "Permission": {
-                "belongsTo": [
-                    "Account"
-                ],
-                "hasMany": [
-                    "Role"
-                ]
-            }
-        }
+  "clever-roles": {
+    "driver": "ORM",
+    "account": {
+      "enabled": true,
+      "requireConfirmation": false,
+      "blockedEmailDomains": "@(gmail|mail|yahoo|aol|aim|hotmail|facebook|cox|verizon|icloud|apple|outlook|yandex|163|126|gmx)\\."
+    },
+    "modelAssociations": {
+      "Account": {
+        "hasMany": [
+          "Role",
+          "Permission"
+        ]
+      },
+      "User": {
+        "belongsTo": [
+          "Role"
+        ]
+      },
+      "Role": {
+        "belongsTo": [
+          "Account"
+        ],
+        "hasMany": [
+          "Permission",
+          "User"
+        ]
+      },
+      "Permission": {
+        "belongsTo": [
+          "Account"
+        ],
+        "hasMany": [
+          "Role"
+        ]
+      }
     }
+  }
 }
