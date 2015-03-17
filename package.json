@@ -1,22 +1,23 @@
 {
-  "name":        "clever-roles",
-  "description": "Adds permissions and roles to users with CleverStack",
-  "version":     "1.2.2",
-  "main":        "module.js",
+  "name"        : "clever-roles",
+  "description" : "Adds permissions and roles to users with CleverStack",
+  "version"     : "1.2.3",
+  "license"     : "MIT"
+  "main"        : "module.js",
   "author": {
-    "name":      "CleverStack",
-    "email":     "admin@cleverstack.io",
-    "web":       "http://cleverstack.io"
+    "name"      : "CleverStack",
+    "email"     : "admin@cleverstack.io",
+    "web"       : "http://cleverstack.io"
   },
   "collaborators": [
     "Richard Gustin <richard.gustin86@gmail.com>"
   ],
   "repository": {
-    "type":      "git",
-    "url":       "git://github.com/CleverStack/clever-roles.git"
+    "type"      : "git",
+    "url"       : "git://github.com/CleverStack/clever-roles.git"
   },
   "bugs": {
-    "url":       "https://github.com/CleverStack/clever-roles/issues"
+    "url"       : "https://github.com/CleverStack/clever-roles/issues"
   },
   "keywords": [
     "cleverstack",
@@ -29,5 +30,4 @@
     "rbac",
     "authentication"
   ],
-  "license":     "MIT"
 }
