@@ -1,95 +1,199 @@
-var Promise     = require('bluebird')
-  , spawn       = require('child_process').spawn
-  , path        = require('path')
-  , fs          = require('fs')
-  , ncp         = require('ncp').ncp
-  , prName      = 'testProject'
-  , assetRoot   = path.resolve(path.join(__dirname, 'assets'))
-  , prRoot      = path.resolve(path.join(assetRoot, prName))
-  , moduleName  = path.resolve(path.join(__dirname, '../')).split(path.sep).pop();
+var Promise = require('bluebird')
+  , spawn   = require('child_process').spawn
+  , path    = require('path')
+  , fs      = require('fs')
+  , rimraf  = require('rimraf')
+  , ncp     = require('ncp').ncp
+  , prName  = 'testProject'
+  , step    = 0;
 
-function createProject(step) {
+function createProject() {
+  step++;
   return new Promise(function(resolve, reject) {
-    var proc = spawn('clever', [ 'init', '-f', '-A', prName, 'backend' ], { cwd: assetRoot });
+    var proc = spawn('clever', [ 'init', '-f', '-A', prName, 'backend' ]);
 
-    console.log('step #' + step + ' - create test project - begin\n');
+    console.log('step #' + step + ' - create test project - begin');
 
     proc.stdout.on('data', function (data) {
-      var str = data.toString();  
+      var str = data.toString();
 
       if (str.match(/ing/) !== null) {
         console.log(str);
       }
     });
 
-    proc.stderr.on('data', function(data) {
-      console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
-      reject (data.toString()); 
+    proc.stderr.on('data', function (data) {
+      console.log('Error in step #' + step + ' - ' + data.toString());
+      reject(data.toString());
     });
 
-    proc.on('close', function(code) {
-      console.log('step #' + step + ' process exited with code ' + code + '\n');
-      resolve(++step);
+    proc.on('close', function (code) {
+      console.log('step #' + step + ' process exited with code ' + code);
+      resolve();
     });
   });
 }
 
-function installORM(step) {
+function cleverSetup() {
+  return new Promise(function(resolve, reject) {
+    var proc = spawn ('clever', [ 'setup' ], { cwd: path.resolve(path.join(__dirname, '..', prName)) });
+    console.log('step #' + step + ' - clever setup');
+
+    proc.stderr.on('data', function (data) {
+      console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
+      reject (data.toString());
+    });
+
+    proc.on('close', function (code) {
+      console.log('step #' + step + ' process exited with code ' + code + '\n');
+      resolve();
+    });
+  });
+}
+
+function installTestModule() {
+  step++;
+  return new Promise(function(resolve, reject) {
+    var source      = path.resolve(path.join(__dirname, '../', prName, 'tests', 'unit', 'test-module'))
+      , dest        = path.resolve(path.join(__dirname, '../', prName, 'modules', 'test-module'));
+
+    console.log('step #' + step + ' - install test-module - begin');
+
+    rimraf(dest, function(e) {
+      if (e === null) {
+        ncp(source, dest, function(err) {
+          if (err !== null) {
+            console.log('Error in step #' + step + ' - ' + err);
+            reject(e);
+          } else {
+            console.log('step #' + step + ' - completed');
+            resolve();
+          }
+        });
+      } else {
+        console.log('Error in step #' + step + ' - ' + e);
+        reject();
+      }
+    });
+
+  });
+}
+
+function installORM() {
+  step++;
   return new Promise(function(resolve, reject) {
     var objs = [
+        { reg: /What environment is this configuration for\?/, write: '\n', done: false },
         { reg: /Database username/ , write: 'travis\n'   , done: false },
         { reg: /Database password/ , write: '\n'         , done: false },
         { reg: /Database name/     , write: 'test_db\n'  , done: false },
-        { reg: /Database dialect/  , write: '\n'         , done: false },
-        { reg: /Database port/     , write: '3306\n'     , done: false },
+        { reg: /Database dialect/  , write: 'mysql\n'    , done: false },
         { reg: /Database host/     , write: '127.0.0.1\n', done: false },
+        { reg: /Database port/     , write: '3306\n'     , done: false }
       ]
-      , proc = spawn ('clever', [ 'install', 'clever-orm' ], { cwd: prRoot });
+      , proc = spawn ('clever', [ 'install', 'clever-orm' ], { cwd: path.join(__dirname, '../', prName) });
 
-    console.log('step #' + step + ' - install clever-orm module - begin\n');
+    console.log('step #' + step + ' - install clever-orm module - begin');
 
-    proc.stdout.on('data', function(data) {
+    proc.stdout.on('data', function (data) {
       var str = data.toString();
 
       if (str.match(/ing/) !== null) {
         console.log(str);
-      } 
+      }
 
-      objs.forEach(function(obj, i) {
+      objs.forEach (function (obj, i) {
         if (obj.done !== true && str.match(obj.reg) !== null) {
-          objs[ i ].done = true;
+          objs[i].done = true;
           proc.stdin.write(obj.write);
-        } 
+        }
       });
     });
 
-    proc.stderr.on('data', function(data) {
+    proc.stderr.on('data', function (data) {
       console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
-      reject(data.toString());
+      reject (data.toString());
     });
 
-    proc.on('close', function(code) {
-      console.log('step #' + step + ' process exited with code ' + code + '\n');
-      resolve(++step);
+    proc.on('close', function (code) {
+      console.log('step #' + step + ' process exited with code ' + code);
+      resolve();
     });
   });
 }
 
-//install clever-auth module to test project
-function installAuth(step) {
+function copyRolesModule() {
+  return new Promise(function(resolve, reject) {
+    var fromDir     = path.join(__dirname, '../')
+      , toDir       = path.join(__dirname, '../', prName, 'modules', 'clever-roles');
+ 
+    console.log('step #' + step + ' - copy clever-roles module in test project - begin\n');
+
+    function copyDir(from, to) {
+      var files = fs.readdirSync(from);
+
+      if (!fs.existsSync(to)) {
+        fs.mkdir(to, function (err) {
+          if (err) {
+            console.log('error - ' + err);
+          }
+        });
+      }
+
+      files.forEach(function (file) {
+        
+        fs.stat(path.join(from, file), function (err, stats) {
+          
+          if (err) {
+            console.log('Error in step #' + step + ' - ' + err + '\n');
+            reject (err);
+          }
+
+          if (stats && stats.isFile()) {
+            copyFile (path.join(from, file), path.join(to, file));
+          }
+
+          if (stats && stats.isDirectory() && file !== prName) {
+            ncp(path.join(from, file), path.join(to, file), function (err) {
+              if (err) {
+                console.log('Error in step #' + step + ' - ' + err + '\n');
+                reject (err);
+              }
+            });
+          }
+        });
+      });
+    }
+
+    function copyFile(from, to) {
+      var rs = fs.createReadStream(from)
+        , ws = fs.createWriteStream(to);
+      
+      rs.on('error', function(err) {
+        console.log(err);
+      });
+
+      ws.on('error', function(err) {
+        console.log(err);
+      });
+        
+      rs.pipe(ws);
+    }
+
+    copyDir(fromDir, toDir);
+
+    console.log('step #' + step + ' - completed');
+    resolve();
+  });
+}
+
+function installUsersModule() {
+  step++;
   return new Promise(function(resolve, reject) {
     var objs = [
-        { reg: /What environment is this configuration for\?/, write: '\n', done: false },
-        { reg: /Secret key used to secure your passport sessions/, write: '\n', done: false },
-        { reg: /What database driver module to use\: \(Use arrow keys\)/, write: '\n', done: false },
-        { reg: /Session Storage Driver\: \(Use arrow keys\)/, write: '\n', done: false },
-        { reg: /Redis host\: \(localhost\)/, write: '\n', done: false },
-        { reg: /Redis port\: \(6379\)/, write: '\n', done: false },
-        { reg: /Redis prefix\:/, write: '\n', done: false },
-        { reg: /Redis key\:/, write: '\n', done: false },
         { reg: /Default Username\: \(default\)/, write: '\n', done: false },
+        { reg: /Default Users Password\: /, write: '\n', done: false },
         { reg: /Overwrite existing user with the same username\? \(Y\/n\)/, write: '\n', done: false },
-        { reg: /Default Users Password\: \(clever\)/, write: '\n', done: false },
         { reg: /Default Users Email\: \(default@cleverstack.io\)/, write: '\n', done: false },
         { reg: /Default Users Firstname\: \(Clever\)/, write: '\n', done: false },
         { reg: /Default Users Lastname\: \(User\)/, write: '\n', done: false },
@@ -98,91 +202,149 @@ function installAuth(step) {
         { reg: /Default User has confirmed their email\: \(Y\/n\)/, write: '\n', done: false },
         { reg: /Default User has an active account\: \(Y\/n\)/, write: '\n', done: false }
       ]
-      , proc = spawn ('clever', [ 'install', 'clever-auth'], { cwd: prRoot });
+      , proc = spawn('clever', [ 'install', 'clever-users' ], { cwd: path.join(__dirname, '../', prName) });
 
-    console.log('step #' + step + ' - clever install clever-auth - begin\n');
+    console.log('step #' + step + ' - install clever-users module - begin\n');
 
-    proc.stdout.on('data', function(data) {
+    proc.stdout.on('data', function (data) {
       var str = data.toString();
 
-      objs.forEach (function(obj, i) {
+      if (str.match(/ing/) !== null) {
+        console.log(str);
+      }
+
+      objs.forEach (function (obj, i) {
         if (obj.done !== true && str.match(obj.reg) !== null) {
-          objs[ i ].done = true;
+          objs[i].done = true;
           proc.stdin.write(obj.write);
-        } 
+        }
       });
     });
 
-    proc.stderr.on('data', function(data) {
+    proc.stderr.on('data', function (data) {
       console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
       reject (data.toString());
     });
 
-    proc.on('close', function(code) {
+    proc.on('close', function (code) {
       console.log('step #' + step + ' process exited with code ' + code + '\n');
-      resolve(++step);
+      resolve();
     });
   });
 }
 
-//copy clever-roles module in test project
-function copyModule (step) {
+function installAuthModule() {
+  step++;
   return new Promise(function(resolve, reject) {
-    var fromDir     = path.resolve(path.join(__dirname, '../'))
-      , toDir       = path.join(prRoot, 'modules', moduleName)
-      , options     = {
-        filter: function(file) {
-          return file.match (prName) === null
-        }
-      };
+    var objs = [
+        { reg: /Overwrite existing user with the same username\?/, write: '\n', done: false },
+        { reg: /What environment is this configuration for\?/, write: '\n', done: false },
+        { reg: /Secret key used to secure your passport sessions/, write: '\n', done: false },
+        { reg: /What database driver module to use\: \(Use arrow keys\)/, write: '\n', done: false },
+        { reg: /Session Storage Driver\: \(Use arrow keys\)/, write: '\n', done: false },
+        { reg: /Redis host\: \(localhost\)/, write: '\n', done: false },
+        { reg: /Redis port\: \(6379\)/, write: '\n', done: false },
+        { reg: /Redis prefix\:/, write: '\n', done: false },
+        { reg: /Redis key\:/, write: '\n', done: false }
+      ]
+      , proc = spawn('clever', [ 'install', 'clever-auth' ], { cwd: path.join(__dirname, '../', prName) });
 
-    console.log('step #' + step + ' - copy ' + moduleName + ' module in test project - start\n');
+    console.log('step #' + step + ' - install clever-auth module - begin\n');
 
-    ncp(fromDir, toDir, options, function(err) {
-      if (err) {
-        return reject('Error in step #' + step + ' - ' + err + '\n');
+    proc.stdout.on('data', function (data) {
+      var str = data.toString();
+
+      if (str.match(/ing/) !== null) {
+        console.log(str);
       }
 
-      console.log('step #' + step + ' - process exited with code 0\n');
-      resolve(++step);
-    });
-  });
-}
-
-//added clever-roles module in bundledDependencies
-function bundled (step) {
-  return new Promise(function(resolve, reject) {
-    var file = path.join(prRoot, 'package.json');
-
-    console.log('step #' + step + ' - added ' + moduleName + ' module in bundledDependencies\n');
-
-    fs.readFile(file, function(err, data) {
-
-      if (err) {
-        return reject('Error in step #' + step + ' - ' + err + '\n');
-      }
-
-      data = JSON.parse(data);
-      data.bundledDependencies.push(moduleName);
-
-      fs.writeFile(file, JSON.stringify(data), function(err) {
-
-        if (err) {
-          return reject('Error in step #' + step + ' - ' + err + '\n');
+      objs.forEach (function (obj, i) {
+        if (obj.done !== true && str.match(obj.reg) !== null) {
+          objs[i].done = true;
+          proc.stdin.write(obj.write);
         }
-
-        console.log('step #' + step + ' - process exited with code 0\n');
-        resolve(++step);
       });
     });
+
+    proc.stderr.on('data', function (data) {
+      console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
+      reject (data.toString());
+    });
+
+    proc.on('close', function (code) {
+      console.log('step #' + step + ' process exited with code ' + code + '\n');
+      resolve();
+    });
   });
 }
 
-createProject (1)
-  .then (installORM)
-  .then (installAuth)
-  .then (copyModule)
-  .then (bundled)
+function installAccountsModule() {
+  step++;
+  return new Promise(function(resolve, reject) {
+    var objs = []
+      , proc = spawn('clever', [ 'install', 'clever-accounts' ], { cwd: path.join(__dirname, '../', prName) });
+
+    console.log('step #' + step + ' - install clever-accounts module - begin\n');
+
+    proc.stdout.on('data', function (data) {
+      var str = data.toString();
+
+      if (str.match(/ing/) !== null) {
+        console.log(str);
+      }
+
+      objs.forEach (function (obj, i) {
+        if (obj.done !== true && str.match(obj.reg) !== null) {
+          objs[i].done = true;
+          proc.stdin.write(obj.write);
+        }
+      });
+    });
+
+    proc.stderr.on('data', function (data) {
+      console.log('Error in step #' + step + ' - ' + data.toString() + '\n');
+      reject (data.toString());
+    });
+
+    proc.on('close', function (code) {
+      console.log('step #' + step + ' process exited with code ' + code + '\n');
+      resolve();
+    });
+  });
+}
+
+function rebaseDb() {
+  step++;
+  return new Promise(function(resolve, reject) {
+    var proc = spawn('grunt', [ 'db' ], { cwd: path.join(__dirname, '../', prName) });
+
+    console.log('step #' + step + ' - rebase db');
+
+    proc.stdout.on('data', function(data) {
+      console.log(data.toString());
+    });
+
+    proc.stderr.on('data', function(data) {
+      console.log('Error in step #' + step + ' - ' + data.toString());
+      reject(data.toString());
+    });
+
+    proc.on('close', function(code) {
+      console.log('step #' + step + ' process exited with code ' + code);
+      resolve();
+    });
+  });
+}
+
+createProject()
+  .then(installORM)
+  .then(installTestModule)
+  .then(installAuthModule)
+  .then(installAccountsModule)
+  .then(installUsersModule)
+  .then(copyRolesModule)
+  .then(cleverSetup)
+  .then(rebaseDb)
   .catch (function (err) {
-    console.log (err);
+    console.error('Error - ' + err);
   });
