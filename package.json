@@ -19,6 +19,9 @@
   "bugs": {
     "url"       : "https://github.com/CleverStack/clever-roles/issues"
   },
+  "peerDependencies": {
+    "clever-accounts" : "~1.2.x"
+  },
   "keywords": [
     "cleverstack",
     "cleverstack-module",
