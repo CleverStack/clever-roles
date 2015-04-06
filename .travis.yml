@@ -18,6 +18,7 @@ env:
   - NODE_ENV=test; NODE_PATH=./lib/:./modules/
 
 before_script:
+  - rm -rf node_modules/clever-accounts
   - mysql -e 'create database test_db;'
   - node tests/beforeTravis.js
   - cd testProject
