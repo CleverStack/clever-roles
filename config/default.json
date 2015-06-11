@@ -9,30 +9,30 @@
     "modelAssociations": {
       "Account": {
         "hasMany": [
-          "Role",
-          "Permission"
+          ["Role", {"as": "Roles", "foreignKey": "AccountId"}],
+          ["Permission", {"as": "Permissions", "foreignKey": "AccountId"}]
         ]
       },
       "User": {
         "belongsTo": [
-          "Role"
+          ["Role", {"as": "Role"}]
         ]
       },
       "Role": {
         "belongsTo": [
-          "Account"
+          ["Account", {"as": "Account"}]
         ],
         "hasMany": [
-          "Permission",
-          "User"
+          ["Permission", {"as": "Permissions", "joinTableName": "PermissionsRoles"}],
+          ["User", {"as": "Users"}]
         ]
       },
       "Permission": {
         "belongsTo": [
-          "Account"
+          ["Account", {"as": "Account"}]
         ],
         "hasMany": [
-          "Role"
+          ["Role", {"as": "Roles", "joinTableName": "PermissionsRoles"}]
         ]
       }
     }
