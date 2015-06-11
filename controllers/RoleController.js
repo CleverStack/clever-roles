@@ -4,6 +4,7 @@ module.exports = function(Controller, RoleService, PermissionController, Account
     service: RoleService,
     
     route: [
+      '[POST] /account/:AccountId/role/?',
       '/account/:AccountId/role/:id/?',
       '/account/:AccountId/role/:id/:action/?',
       '/account/:AccountId/roles/?',
