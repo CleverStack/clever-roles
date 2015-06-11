@@ -1,116 +1,74 @@
-module.exports = function(Promise, Service, RoleModel, PermissionService, UserService) {
+module.exports = function(Promise, Service, RoleModel, PermissionService, underscore, async) {
+  var debug = require('debug')('cleverstack:services:RoleService');
+  
   return Service.extend({
-
     model: RoleModel,
 
-    create: function(data, options) {
-      var service = this
-        , create  = this._super;
-
-      options = options || {};
-      
-      return new Promise(function(resolve, reject) {
-        create.apply(service, [ {
-          name:        data.name,
-          description: data.description ? data.description : null,
-          AccountId:   data.AccountId ? data.AccountId : null
-        }, options ])
-        .then(function(role) {
-          return service.handlePermissions(role, data.Permissions, options);
-        })
-        .then(function(role) {
-          return service.handleUsers(role, data.users, options);
-        })
-        .then(resolve)
-        .catch(reject);
-      });
-    },
-
-    update: function(idOrWhere, data, options) {
-      var service = this
-        , update  = this._super;
-
-      options = options || {};
-
-      return new Promise(function(resolve, reject) {
-        update.apply(service, [ idOrWhere, {
-          name:        data.name,
-          description: data.description ? data.description : null,
-          AccountId:   data.AccountId ? data.AccountId : null
-        }, options ])
-        .then(function(role) {
-          return service.handlePermissions(role, data.Permissions, options);
-        })
-        .then(function(role) {
-          return service.handleUsers(role, data.users, options);
-        })
-        .then(resolve)
-        .catch(reject);
-      });
-    },
-
-    handlePermissions: function(role, permIds, options) {
-      return new Promise(function(resolve, reject) {
-        if (!permIds || !permIds.length) {
-          return resolve(role);
+    'AccountModel afterCreate': function(account, values, queryOptions, callback) {
+      Promise.all([
+        this.findDefaultRoles(queryOptions),
+        PermissionService.createAccountDefaultPermissions(account, values, queryOptions)
+      ])
+      .spread(function(defaultRoles, defaultPermissions) {
+        if (!defaultRoles.length) {
+          if (debug.enabled) {
+            debug('found no default roles for an account!');
+          }
+          return callback(null);
+        } else if (debug.enabled) {
+          debug('creating %s default roles for new account...', defaultRoles.length);
         }
 
-        PermissionService
-          .findAll({
-            where: {
-              id: {
-                in: permIds
-              }
+        async.map(
+          defaultRoles,
+          this.proxy(function createDefaultRole(defaultRole, createCallback) {
+            var Permissions = [];
+
+            if (defaultRole.Permissions) {
+              defaultRole.Permissions.forEach(function(rolePermission) {
+                var permission = underscore.findWhere(defaultPermissions, { action: rolePermission.action });
+                if (permission) {
+                  Permissions.push(permission.entity);
+                }
+              });
             }
-          }, options)
-          .then(function(permissions) {
-            role.setPermissions(permissions, options).then(function() {
-              resolve(role);
-            })
-            .catch(reject);
-          })
-          .catch(reject);
-      });
-    },
 
-    handleUsers: function(role, userIds, options) {
-      return new Promise(function(resolve, reject) {
-        if (!userIds || !userIds.length) {
-          return resolve(role);
-        }
-
-        UserService
-          .findAll({
-            where: {
-              id: {
-                in: userIds
+            this
+            .create({
+              AccountId   : account.id,
+              systemRole  : true,
+              name        : defaultRole.name,
+              description : defaultRole.description,
+              Permissions : Permissions
+            }, queryOptions )
+            .then(createCallback.bind(null, null))
+            .catch(createCallback)
+          }),
+          function(error, roles) {
+            if (!error) {
+              if (roles) {
+                account.entity.Roles        = roles;
+                account.entity.values.Roles = roles;
               }
+              callback(null, values);
+            } else {
+              callback(error);
             }
-          }, options)
-          .then(function(users) {
-            role.setUsers(users, options).then(function() {
-              resolve(role);
-            })
-            .catch(reject);
-          })
-          .catch(reject);
-      });
+          }
+        );
+      }
+      .bind(this))
+      .catch(callback);
     },
 
-    hasRole: function (req, roles) {
-      roles = Array.isArray (roles) ? roles : [roles];
-
-      var isAuthed = req.isAuthenticated () && !!req.user && !!req.user.Role
-        , hasRole = false;
-
-      roles.forEach (function (role) {
-        if (isAuthed && role === req.user.Role.name) {
-          hasRole = true;
+    findDefaultRoles: function(queryOptions) {
+      return this.findAll({
+        where: {
+          AccountId  : null,
+          systemRole : true
         }
-      });
-
-      return hasRole;
+      },
+      queryOptions);
     }
-
   });
 };

@@ -1,70 +1,58 @@
-module.exports = function(Promise, Service, PermissionModel, RoleModel) {
+module.exports = function(Promise, Service, PermissionModel, async) {
   return Service.extend({
-    
+
     model: PermissionModel,
 
-    create: function(data, options) {
-      var service = this
-        , create  = this._super;
-
-      options = options || {};
-
-      return new Promise(function(resolve, reject) {
-        create.apply(service, [{
-          action:      data.action,
-          description: data.description   ? data.description : null,
-          AccountId:   data.AccountId     ? data.AccountId : null
-        }, options ])
-        .then(function(permission) {
-          return service.handleRoles(permission, data.Roles, options);
-        })
-        .then(resolve)
-        .catch(reject);
-      });
-    },
-
-    update: function(idOrWhere, data, options) {
-      var service = this
-        , update  = this._super;
-
-      options = options || {};
-
-      return new Promise(function(resolve, reject) {
-        update.apply(service, [idOrWhere, {
-          action:      data.action,
-          description: data.description   ? data.description : null,
-          AccountId:   data.AccountId     ? data.AccountId : null
-        }])
-        .then(function(permission) {
-          return service.handleRoles(permission, data.Roles, options);
-        })
-        .then(resolve)
-        .catch(reject);
-      });
-    },
-
-    handleRoles: function(permission, roleIds, options) {
-      return new Promise(function(resolve, reject) {
-        if (!roleIds || !roleIds.length) {
-          return resolve(permission);
+    findDefaultPermissions: function(queryOptions) {
+      return this.findAll({
+        where: {
+          AccountId        : null,
+          systemPermission : true
         }
+      },
+      queryOptions);
+    },
 
-        RoleModel
-        .findAll({
-          where: {
-            id: {
-              in: roleIds
-            }
+    createAccountDefaultPermissions: function(account, values, queryOptions) {
+      return new Promise(function(resolve, reject) {
+        this
+        .findDefaultPermissions(queryOptions)
+        .then(this.proxy(function(defaultPermissions) {
+          if (!defaultPermissions.length) {
+            return resolve([]);
           }
-        }, options)
-        .then(function(roles) {
-          permission.setRoles(roles).then(function() {
-            resolve(permission);
-          })
-          .catch(reject);
-        })
+
+          async.map(
+            defaultPermissions,
+            this.proxy('createDefaultPermission', queryOptions, account),
+            function(error, permissions) {
+              if (!error) {
+                if (permissions) {
+                  account.entity.Permissions        = permissions;
+                  account.entity.values.Permissions = permissions;
+                }
+                resolve(permissions);
+              } else {
+                reject(error);
+              }
+            }
+          );
+        }))
         .catch(reject);
-      });
+      }
+      .bind(this));
+    },
+
+    createDefaultPermission: function(queryOptions, account, defaultPermission, callback) {
+      this
+      .create({
+        AccountId        : account.id,
+        action           : defaultPermission.action,
+        description      : defaultPermission.description,
+        systemPermission : true
+      }, queryOptions)
+      .then(callback.bind(null, null))
+      .catch(callback);
     }
-  });
+  })
 }
