@@ -1,7 +1,7 @@
 {
   "name"        : "clever-roles",
   "description" : "Adds permissions and roles to users with CleverStack",
-  "version"     : "1.2.3",
+  "version"     : "1.2.4",
   "license"     : "MIT",
   "main"        : "module.js",
   "author": {
