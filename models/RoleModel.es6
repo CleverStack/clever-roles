@@ -1,19 +1,22 @@
-module.exports = function(Model, config, utils, Exceptions, PermissionModel, UserModel) {
+export default function(Model, Exceptions, config, utils, PermissionModel, UserModel) {
+  
   return Model.extend('Role',
   {
-    type            : config['clever-roles'].driver || 'ORM',
-    timeStampable   : true,
-    softDeleteable  : false,
+    type           : config['clever-roles'].driver || 'ORM',
+    timeStampable  : true,
+    softDeleteable : false,
 
-    'PermissionModel beforeAllFindersOptions': function(findOptions, queryOptions, callback) {
-      utils.helpers
+    'PermissionModel beforeAllFindersOptions'(findOptions, queryOptions, callback) {
+      utils
+        .helpers
         .includeModel(findOptions, this, 'Roles');
 
       callback(null, findOptions);
     },
 
-    'UserModel beforeAllFindersOptions': function(findOptions, queryOptions, callback) {
-      utils.helpers
+    'UserModel beforeAllFindersOptions'(findOptions, queryOptions, callback) {
+      utils
+        .helpers
         .includeModel(findOptions, this, 'Role', {
           as: 'Permissions',
           model: PermissionModel.entity
@@ -22,15 +25,16 @@ module.exports = function(Model, config, utils, Exceptions, PermissionModel, Use
       callback(null, findOptions);
     },
 
-    beforeAllFindersOptions: function(findOptions, queryOptions, callback) {
-      utils.helpers
+    beforeAllFindersOptions(findOptions, queryOptions, callback) {
+      utils
+        .helpers
         .includeModel(findOptions, PermissionModel, 'Permissions')
         .includeModel(findOptions, UserModel, 'Users');
     
       callback(null, findOptions);
     },
 
-    beforeCreate: function(values, queryOptions, callback) {
+    beforeCreate(values, queryOptions, callback) {
       if (!values.name) {
         callback(new Exceptions.InvalidData('You must provide a name'));
       } else {
@@ -44,7 +48,7 @@ module.exports = function(Model, config, utils, Exceptions, PermissionModel, Use
       }
     },
 
-    beforeUpdate: function() {
+    beforeUpdate() {
       return this.beforeCreate.apply(this, [].slice.call(arguments));
     }
   },

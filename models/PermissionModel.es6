@@ -1,11 +1,12 @@
-module.exports = function(Model, config, async, utils, Exceptions, UserModel, AccountModel) {
+export default function(Model, Exceptions, config, async, utils) {
+
   return Model.extend('Permission',
   {
-    type            : config['clever-roles'].driver || 'ORM',
-    timeStampable   : true,
-    softDeleteable  : false,
+    type           : config['clever-roles'].driver || 'ORM',
+    timeStampable  : true,
+    softDeleteable : false,
 
-    beforeCreate: function(values, queryOptions, callback) {
+    beforeCreate(values, queryOptions, callback) {
       if (!values.action) {
         callback(new Exceptions.InvalidData('You must provide an action name'));
       } else {
@@ -19,7 +20,7 @@ module.exports = function(Model, config, async, utils, Exceptions, UserModel, Ac
       }
     },
 
-    beforeUpdate: function() {
+    beforeUpdate() {
       return this.beforeCreate.apply(this, [].slice.call(arguments));
     }
   },
@@ -42,4 +43,5 @@ module.exports = function(Model, config, async, utils, Exceptions, UserModel, Ac
       default       : false
     }
   });
+
 };
